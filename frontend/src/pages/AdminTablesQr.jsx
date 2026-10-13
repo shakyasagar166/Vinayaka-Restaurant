@@ -118,10 +118,10 @@ export default function AdminTablesQr() {
                 {/* Restaurant Branding Header on Card */}
                 <div className="w-full border-b border-amber-500/20 pb-3 mb-4">
                   <span className="font-cinzel text-xs font-extrabold tracking-widest text-amber-400 uppercase block">
-                    Vinayaka Restaurant
+                    Garam Masala Restaurant
                   </span>
                   <span className="text-[10px] text-gray-400 tracking-wider uppercase block">
-                    Rooftop &amp; Lounge
+                    Family Restaurant &amp; Dining
                   </span>
                 </div>
 

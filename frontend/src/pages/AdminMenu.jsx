@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, Check, X, Sparkles, Upload, Image as ImageIcon, Camera, Flame, Eye, EyeOff, Search } from 'lucide-react';
 import { api } from '../api/api';
 
-// Curated high-res food photo presets for instant 1-click selection
+// Curated high-res food photo presets with real Garam Masala store photos at the top
 const FOOD_PHOTO_PRESETS = [
+  { name: "⭐ Tandoori Roti & Gravy", url: "/images/tandoori-roti-gravy.webp" },
+  { name: "⭐ Crispy Chilli Potato", url: "/images/crispy-chilli-potato.jpg" },
+  { name: "⭐ Desi Spicy Chowmein", url: "/images/desi-chowmein.jpg" },
+  { name: "⭐ Tandoori Feast Spread", url: "/images/tandoori-spread.jpg" },
   { name: "Paneer Tikka", url: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=700&auto=format&fit=crop&q=80" },
   { name: "Dal Makhani", url: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=700&auto=format&fit=crop&q=80" },
   { name: "Paneer Gravy", url: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=700&auto=format&fit=crop&q=80" },

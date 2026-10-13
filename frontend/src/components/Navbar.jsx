@@ -19,23 +19,23 @@ export default function Navbar({ onNavigate, currentPage }) {
           >
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 p-0.5 shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300 shrink-0">
               <div className="w-full h-full bg-[#0d121f] rounded-[10px] flex items-center justify-center">
-                <span className="font-cinzel text-base sm:text-xl font-black bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
-                  VR
+                <span className="font-cinzel text-base sm:text-lg font-black bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
+                  GM
                 </span>
               </div>
             </div>
 
             <div className="min-w-0">
               <div className="flex items-center space-x-1.5">
-                <h1 className="font-cinzel text-base sm:text-lg font-black tracking-wider text-white group-hover:text-amber-400 transition-colors truncate">
-                  VINAYAKA
+                <h1 className="font-cinzel text-sm sm:text-base md:text-lg font-black tracking-wider text-white group-hover:text-amber-400 transition-colors truncate">
+                  GARAM MASALA
                 </h1>
                 <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
-                  Lounge
+                  Family
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-gray-400 tracking-wider uppercase flex items-center gap-1 truncate">
-                <span>Rooftop &amp; Dining</span>
+                <span>Restaurant &amp; Dining</span>
                 <Sparkles className="w-2.5 h-2.5 text-amber-400 inline shrink-0" />
               </p>
             </div>

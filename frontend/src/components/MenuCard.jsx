@@ -138,7 +138,7 @@ export default function MenuCard({ item }) {
           </div>
 
           <p className="text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed font-sans">
-            {item.description || "Freshly cooked to order with signature Vinayaka aromatic seasonings."}
+            {item.description || "Freshly cooked to order with signature Garam Masala aromatic seasonings."}
           </p>
 
           {/* Active Note Preview */}

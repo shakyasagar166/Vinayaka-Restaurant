@@ -46,6 +46,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Allow all restaurant endpoints so Customer orders and Admin sync never get blocked by 401/403
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/restaurant/**").permitAll()
                 .requestMatchers("/api/menu/**").permitAll()
                 .requestMatchers("/api/orders/**").permitAll()
                 .requestMatchers("/api/tables/**").permitAll()

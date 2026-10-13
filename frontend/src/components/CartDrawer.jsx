@@ -297,7 +297,7 @@ export default function CartDrawer({ onOrderSuccess }) {
                 )}
               </button>
               <p className="text-[10px] text-center text-gray-400">
-                Directly sent to Vinayaka Restaurant's kitchen screen &bull; Table {tableNumber}
+                Directly sent to Garam Masala Restaurant's kitchen screen &bull; Table {tableNumber}
               </p>
             </div>
           )}

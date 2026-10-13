@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function AdminLogin({ onLoginSuccess, onCancel }) {
   const { login } = useAuth();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('vinayaka@123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,11 +24,6 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
     }
   };
 
-  const handleFillDemo = () => {
-    setUsername('admin');
-    setPassword('vinayaka@123');
-  };
-
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md bg-[#0d121f] border border-amber-500/30 rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden">
@@ -43,10 +38,10 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
             </div>
           </div>
           <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-amber-300">
-            Vinayaka Staff Portal
+            Garam Masala Restaurant
           </h2>
           <p className="text-xs text-gray-400">
-            Rooftop &amp; Lounge Management &bull; Orders &amp; Menu Control
+            Admin &amp; Staff Portal &bull; Live Orders, Menu &amp; Profile Control
           </p>
         </div>
 
@@ -61,7 +56,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-              Staff Username
+              Admin / Staff Username
             </label>
             <div className="relative">
               <User className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -70,15 +65,15 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
-                className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none"
+                placeholder="Username दर्ज करें"
+                className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none transition-colors"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-              Password
+              Secret Password
             </label>
             <div className="relative">
               <Lock className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -87,22 +82,10 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none"
+                placeholder="Password दर्ज करें"
+                className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none transition-colors"
               />
             </div>
-          </div>
-
-          {/* Quick Demo Credentials Autofill */}
-          <div className="pt-1 flex items-center justify-between text-xs text-gray-400">
-            <span>Default: admin / vinayaka@123</span>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="text-amber-400 hover:text-amber-300 font-semibold underline"
-            >
-              Fill Demo
-            </button>
           </div>
 
           <button
@@ -111,10 +94,10 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
             className="w-full mt-4 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-extrabold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/20 active:scale-98 transition-all disabled:opacity-50"
           >
             {loading ? (
-              <span>Logging in...</span>
+              <span>Verifying credentials...</span>
             ) : (
               <>
-                <span>Staff Login</span>
+                <span>Secure Admin Login</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -123,9 +106,9 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="w-full text-center text-xs text-gray-500 hover:text-gray-300 pt-2"
+            className="w-full text-center text-xs text-gray-400 hover:text-amber-300 pt-2 transition-colors"
           >
-            Back to Dining Menu
+            &larr; Back to Dining Menu
           </button>
         </form>
 

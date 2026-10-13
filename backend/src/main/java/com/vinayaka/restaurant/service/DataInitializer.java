@@ -29,31 +29,47 @@ public class DataInitializer implements CommandLineRunner {
     private MenuItemRepository menuItemRepository;
 
     @Autowired
+    private com.vinayaka.restaurant.repository.RestaurantProfileRepository restaurantProfileRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
         seedUsers();
+        seedRestaurantProfile();
         seedTables();
         seedMenuItems();
     }
 
     private void seedUsers() {
-        if (userRepository.count() == 0) {
+        if (!userRepository.existsByUsername("garammasala")) {
             User admin = new User(
-                    "admin",
-                    passwordEncoder.encode("vinayaka@123"),
-                    "Vinayaka Manager",
+                    "garammasala",
+                    passwordEncoder.encode("garammasala12"),
+                    "Garam Masala Owner",
                     Role.ADMIN
             );
-            User staff = new User(
-                    "staff",
-                    passwordEncoder.encode("vinayaka@123"),
-                    "Captain Raj",
-                    Role.STAFF
+            userRepository.save(admin);
+            System.out.println("✅ Garam Masala Admin account initialized (garammasala)");
+        }
+    }
+
+    private void seedRestaurantProfile() {
+        if (restaurantProfileRepository.count() == 0) {
+            com.vinayaka.restaurant.model.RestaurantProfile profile = new com.vinayaka.restaurant.model.RestaurantProfile(
+                    "Garam Masala Family Restaurant",
+                    "असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल",
+                    "Sagar Shakya",
+                    "Restaurant Owner & Host",
+                    "गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।",
+                    "+91 98765 43210",
+                    "Garam Masala Restaurant, Near Main Market",
+                    "11:00 AM - 11:30 PM (Daily)",
+                    "/images/restaurant-interior.webp"
             );
-            userRepository.saveAll(Arrays.asList(admin, staff));
-            System.out.println("✅ Default Admin & Staff accounts initialized (admin / vinayaka@123)");
+            restaurantProfileRepository.save(profile);
+            System.out.println("✅ Default Garam Masala Restaurant Profile initialized");
         }
     }
 

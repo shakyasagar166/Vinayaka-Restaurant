@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Utensils, QrCode, LogOut, ExternalLink, IndianRupee, Clock, CheckCircle2, RefreshCw, Sparkles } from 'lucide-react';
+import { ChefHat, Utensils, QrCode, LogOut, ExternalLink, IndianRupee, Clock, CheckCircle2, RefreshCw, Sparkles, Store } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AdminOrders from './AdminOrders';
 import AdminMenu from './AdminMenu';
 import AdminTablesQr from './AdminTablesQr';
+import AdminProfile from './AdminProfile';
 import { api } from '../api/api';
 
 export default function AdminDashboard({ onNavigateToMenu }) {
@@ -65,14 +66,14 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-white">
-                Vinayaka Admin Portal
+                Garam Masala Admin Portal
               </h2>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                {user?.role || 'Staff'}
+                {user?.role || 'Admin'}
               </span>
             </div>
             <p className="text-xs text-gray-400 mt-0.5">
-              Logged in as <strong className="text-amber-300">{user?.fullName || 'Manager'}</strong> &bull; Rooftop &amp; Lounge Control
+              Logged in as <strong className="text-amber-300">{user?.fullName || 'Owner'}</strong> &bull; Garam Masala Family Restaurant
             </p>
           </div>
         </div>
@@ -203,6 +204,18 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           <QrCode className="w-4 h-4" />
           <span>Table QR Generator &amp; Standees</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`py-3 px-4 font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'profile'
+              ? 'border-amber-400 text-amber-300 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Store className="w-4 h-4" />
+          <span>About &amp; Owner Profile (रेस्टोरेंट व ओनर)</span>
+        </button>
       </div>
 
       {/* Tab Panels */}
@@ -210,6 +223,7 @@ export default function AdminDashboard({ onNavigateToMenu }) {
         {activeTab === 'orders' && <AdminOrders />}
         {activeTab === 'menu' && <AdminMenu />}
         {activeTab === 'tables' && <AdminTablesQr />}
+        {activeTab === 'profile' && <AdminProfile />}
       </div>
 
     </div>

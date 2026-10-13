@@ -476,20 +476,89 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem('vr_token', data.token);
+          localStorage.setItem('vr_user', JSON.stringify(data));
+        }
+        return data;
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Galat username ya password. (Invalid credentials).');
+      }
     } catch (e) {
-      // Fallback
+      if (e.message && e.message.includes('Galat username')) {
+        throw e;
+      }
+      // Offline fallback if server is momentarily unreachable
+      if (username === 'garammasala' && password === 'garammasala12') {
+        const userObj = {
+          token: 'garam-masala-admin-token-2026',
+          username: 'garammasala',
+          fullName: 'Garam Masala Owner',
+          role: 'ADMIN'
+        };
+        localStorage.setItem('vr_token', userObj.token);
+        localStorage.setItem('vr_user', JSON.stringify(userObj));
+        return userObj;
+      }
+      throw new Error('Galat username ya password.');
+    }
+  },
+
+  // Restaurant & Owner Profile (Admin editable & Customer visible)
+  async getRestaurantProfile() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/restaurant/profile`);
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('restaurant_profile', JSON.stringify(data));
+        return data;
+      }
+    } catch (e) {
+      // offline fallback
     }
 
-    if (username === 'admin' && password === 'vinayaka@123') {
-      return {
-        token: 'demo-admin-jwt-token-vinayaka-rooftop-2026',
-        username: 'admin',
-        fullName: 'Vinayaka Manager',
-        role: 'ADMIN'
-      };
+    const local = localStorage.getItem('restaurant_profile');
+    if (local) {
+      try { return JSON.parse(local); } catch (err) {}
     }
-    throw new Error('Galat username ya password. Default: admin / vinayaka@123');
+
+    return {
+      restaurantName: "Garam Masala Family Restaurant",
+      tagline: "असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल",
+      ownerName: "Sagar Shakya",
+      ownerTitle: "Restaurant Owner & Host",
+      aboutStory: "गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।",
+      contactPhone: "+91 98765 43210",
+      address: "Garam Masala Restaurant, Near Main Market",
+      openingHours: "11:00 AM - 11:30 PM (Daily)",
+      bannerImage: "/images/restaurant-interior.webp"
+    };
+  },
+
+  async updateRestaurantProfile(profileData) {
+    localStorage.setItem('restaurant_profile', JSON.stringify(profileData));
+    broadcastEvent('PROFILE_UPDATED', profileData);
+    window.dispatchEvent(new CustomEvent('garam_masala_profile_updated', { detail: profileData }));
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/restaurant/profile`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(profileData)
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        localStorage.setItem('restaurant_profile', JSON.stringify(updated));
+        return updated;
+      }
+    } catch (e) {
+      // offline
+    }
+
+    return profileData;
   },
 
   // Dashboard Stats

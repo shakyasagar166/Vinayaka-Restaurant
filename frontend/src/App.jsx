@@ -82,11 +82,11 @@ function MainApp() {
       {/* Footer */}
       <footer className="no-print py-8 border-t border-gray-900 bg-[#06080e] text-center text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-4 space-y-2">
-          <p className="font-cinzel text-amber-400/80 font-bold tracking-widest text-sm uppercase">
-            Vinayaka Restaurant &bull; Rooftop &amp; Lounge
+          <p className="font-cinzel text-amber-400 font-bold tracking-widest text-sm uppercase">
+            Garam Masala Family Restaurant
           </p>
           <p className="text-gray-400">
-            Open Air Sky Dining &bull; Luxury Lounge &bull; Fine Dine Experience
+            असली स्वाद &bull; शुद्ध मसाले &bull; पारिवारिक माहौल &bull; Authentic Taste
           </p>
           <div className="pt-2 flex justify-center items-center gap-4 text-[11px]">
             <button
@@ -100,11 +100,11 @@ function MainApp() {
               onClick={() => handleNavigate(isAuthenticated ? 'admin' : 'login')}
               className="text-amber-400/90 hover:text-amber-300 font-semibold transition-colors"
             >
-              Restaurant Staff Login
+              Admin Portal
             </button>
           </div>
           <p className="text-[10px] text-gray-600 pt-3">
-            &copy; {new Date().getFullYear()} Vinayaka Restaurant. Crafted for seamless contactless dining.
+            &copy; {new Date().getFullYear()} Garam Masala Restaurant. Direct contactless table ordering.
           </p>
         </div>
       </footer>

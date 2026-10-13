@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Sparkles, Utensils, Star, MapPin, ChevronRight, RefreshCw, Flame, Clock, Check } from 'lucide-react';
+import { Search, Sparkles, Utensils, Star, MapPin, ChevronRight, RefreshCw, Flame, Clock, Check, Phone, Store, User, HeartHandshake, ShieldCheck, Info } from 'lucide-react';
 import MenuCard from '../components/MenuCard';
 import { useCart } from '../context/CartContext';
 import { api } from '../api/api';
 
 const CATEGORY_ICONS = {
   'All': '🌟',
-  'Rooftop Starters': '🔥',
+  'Starters & Snacks': '🔥',
   'Main Course': '🍛',
-  'Breads & Rice': '🫓',
-  'Rooftop Mocktails': '🍹',
+  'Tandoori Breads & Rice': '🫓',
+  'Beverages & Shakes': '🍹',
   'Desserts': '🍨'
 };
 
@@ -23,8 +23,22 @@ export default function CustomerMenu({ onNavigate }) {
   const [nonVegOnly, setNonVegOnly] = useState(false);
   const [chefSpecialOnly, setChefSpecialOnly] = useState(false);
   const [spicyOnly, setSpicyOnly] = useState(false);
-  const [hideOutOfStock, setHideOutOfStock] = useState(false); // Toggle to hide or show sold out items
+  const [hideOutOfStock, setHideOutOfStock] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showStory, setShowStory] = useState(false);
+
+  // Restaurant Profile State
+  const [profile, setProfile] = useState({
+    restaurantName: 'Garam Masala Family Restaurant',
+    tagline: 'असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल',
+    ownerName: 'Sagar Shakya',
+    ownerTitle: 'Restaurant Owner & Host',
+    aboutStory: 'गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।',
+    contactPhone: '+91 98765 43210',
+    address: 'Garam Masala Restaurant, Near Main Market',
+    openingHours: '11:00 AM - 11:30 PM (Daily)',
+    bannerImage: '/images/restaurant-interior.webp'
+  });
 
   const loadMenu = async () => {
     try {
@@ -40,8 +54,18 @@ export default function CustomerMenu({ onNavigate }) {
     }
   };
 
+  const loadProfile = async () => {
+    try {
+      const data = await api.getRestaurantProfile();
+      if (data) setProfile(prev => ({ ...prev, ...data }));
+    } catch (e) {
+      console.warn("Error loading profile:", e);
+    }
+  };
+
   useEffect(() => {
     loadMenu();
+    loadProfile();
 
     // 1. Cross-tab BroadcastChannel listener for instant zero-lag updates from Admin
     let channel = null;
@@ -51,6 +75,9 @@ export default function CustomerMenu({ onNavigate }) {
         channel.onmessage = (event) => {
           if (event.data?.type === 'MENU_UPDATED' || event.data?.type === 'MENU_ITEM_TOGGLED') {
             loadMenu();
+          } else if (event.data?.type === 'PROFILE_UPDATED') {
+            if (event.data.payload) setProfile(prev => ({ ...prev, ...event.data.payload }));
+            else loadProfile();
           }
         };
       }
@@ -60,19 +87,30 @@ export default function CustomerMenu({ onNavigate }) {
     const handleUpdate = () => {
       loadMenu();
     };
+    const handleProfileUpdate = (e) => {
+      if (e.detail) setProfile(prev => ({ ...prev, ...e.detail }));
+      else loadProfile();
+    };
 
     window.addEventListener('vinayaka_menu_updated', handleUpdate);
+    window.addEventListener('garam_masala_profile_updated', handleProfileUpdate);
     window.addEventListener('storage', handleUpdate);
-    window.addEventListener('focus', handleUpdate);
+    window.addEventListener('focus', () => {
+      loadMenu();
+      loadProfile();
+    });
 
-    // 3. Fast 2-second background polling
-    const timer = setInterval(loadMenu, 2000);
+    // 3. Fast background polling
+    const timer = setInterval(() => {
+      loadMenu();
+      loadProfile();
+    }, 4000);
 
     return () => {
       if (channel) channel.close();
       window.removeEventListener('vinayaka_menu_updated', handleUpdate);
+      window.removeEventListener('garam_masala_profile_updated', handleProfileUpdate);
       window.removeEventListener('storage', handleUpdate);
-      window.removeEventListener('focus', handleUpdate);
       clearInterval(timer);
     };
   }, []);
@@ -115,44 +153,60 @@ export default function CustomerMenu({ onNavigate }) {
   return (
     <div className="min-h-screen pb-32 pt-3 px-3 sm:px-6 max-w-7xl mx-auto space-y-6">
       
-      {/* Luxurious Rooftop Dining Hero Banner */}
-      <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 bg-gradient-to-r from-[#12182b] via-[#1b233a] to-[#0c101c] p-5 sm:p-8 shadow-2xl">
+      {/* Garam Masala Restaurant Hero Banner */}
+      <div 
+        className="relative rounded-3xl overflow-hidden border border-amber-500/30 p-5 sm:p-8 shadow-2xl transition-all"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(9, 13, 22, 0.94) 0%, rgba(15, 20, 35, 0.88) 55%, rgba(9, 13, 22, 0.78) 100%), url(${profile.bannerImage || '/images/restaurant-interior.webp'})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
         <div className="absolute -right-16 -top-16 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -left-16 -bottom-16 w-60 h-60 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold tracking-wide shadow-sm">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold tracking-wide shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
               <span>Contactless Dining &bull; Direct Table Ordering &bull; No Login Required</span>
             </div>
             
-            <h1 className="font-cinzel text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-wide">
-              Vinayaka Restaurant
+            <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-wide">
+              {profile.restaurantName || "Garam Masala Family Restaurant"}
             </h1>
-            <p className="font-heading italic text-amber-400 text-base sm:text-lg flex items-center gap-2">
-              <span>Rooftop Sky Dining &amp; Luxury Lounge</span>
-              <span className="text-gray-400 text-xs font-sans not-italic">&bull; Open 12:00 PM - 11:30 PM</span>
+            <p className="font-heading italic text-amber-400 text-base sm:text-lg flex flex-wrap items-center gap-2">
+              <span>{profile.tagline || "असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल"}</span>
+              <span className="text-gray-400 text-xs font-sans not-italic">&bull; Open {profile.openingHours || '11:00 AM - 11:30 PM'}</span>
             </p>
             <p className="text-gray-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Apni table par baithe baithe order karein. Order seedha kitchen chef ke screen par live pahunchega!
+              Apni table par baithe baithe order karein. Aapka order bina kisi deri ke seedha kitchen me chef ke pass pahunchega!
             </p>
 
-            <div className="flex items-center gap-4 text-xs text-gray-400 pt-1">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-400 pt-1">
               <span className="flex items-center gap-1 text-amber-300 font-semibold">
                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span>4.9 (500+ Dine-in Reviews)</span>
+                <span>4.9 (Authentic Taste)</span>
               </span>
               <span>&bull;</span>
               <span className="flex items-center gap-1 text-emerald-400 font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{availableCount} Dishes Available Today</span>
               </span>
+              <span>&bull;</span>
+              <button
+                type="button"
+                onClick={() => setShowStory(!showStory)}
+                className="text-amber-400 hover:text-amber-300 underline font-bold flex items-center gap-1 cursor-pointer"
+              >
+                <Info className="w-3.5 h-3.5" />
+                <span>{showStory ? "Hide Story / छुपाएं" : "About & Owner Story (ओनर के बारे में)"}</span>
+              </button>
             </div>
           </div>
 
           {/* Current Table Card */}
-          <div className="shrink-0 bg-black/60 border-2 border-amber-500/40 rounded-3xl p-5 flex items-center justify-between md:flex-col md:items-start gap-3 backdrop-blur-xl shadow-2xl">
+          <div className="shrink-0 bg-black/70 border-2 border-amber-500/40 rounded-3xl p-5 flex items-center justify-between md:flex-col md:items-start gap-3 backdrop-blur-xl shadow-2xl">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400/80 block">
                 Seated Dining Table
@@ -169,6 +223,168 @@ export default function CustomerMenu({ onNavigate }) {
               Change Table
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* About Garam Masala & Meet The Owner Section */}
+      <div className={`rounded-3xl border border-amber-500/30 bg-[#0d1222] p-5 sm:p-7 shadow-xl space-y-5 transition-all duration-300 ${!showStory ? 'hidden sm:block' : 'block'}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-800 pb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <Store className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-amber-300 flex items-center gap-2">
+                <span>About Our Restaurant &amp; Owner</span>
+                <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-sans font-bold">
+                  हमारी पहचान
+                </span>
+              </h3>
+              <p className="text-xs text-gray-400">
+                {profile.tagline || 'असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {profile.contactPhone && (
+              <a
+                href={`tel:${profile.contactPhone}`}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 text-amber-400" />
+                <span>Call Us: {profile.contactPhone}</span>
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Content & Photo Gallery Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          {/* Left Column: Owner & Story */}
+          <div className="lg:col-span-7 space-y-4">
+            
+            {/* Owner Greeting Badge */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/25 flex items-start gap-3">
+              <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
+                <User className="w-6 h-6" />
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-amber-400 uppercase font-black tracking-widest block">
+                  Meet The Host / रेस्टोरेंट संचालक
+                </span>
+                <h4 className="text-base sm:text-lg font-bold text-white">
+                  {profile.ownerName || 'Sagar Shakya'}
+                </h4>
+                <p className="text-xs text-amber-300/80">
+                  {profile.ownerTitle || 'Owner & Host'} &bull; {profile.restaurantName || 'Garam Masala Family Restaurant'}
+                </p>
+              </div>
+            </div>
+
+            {/* Story / About text */}
+            <div className="text-xs sm:text-sm text-gray-300 leading-relaxed bg-black/40 p-4 rounded-2xl border border-gray-800 space-y-2">
+              <p className="italic text-gray-200">
+                "{profile.aboutStory || 'गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं।'}"
+              </p>
+            </div>
+
+            {/* Highlights pill row */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-gray-300 pt-1">
+              <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>100% शुद्ध खड़े मसाले</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2">
+                <Flame className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>ताज़ा तंदूरी तैयारी</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2 col-span-2 sm:col-span-1">
+                <HeartHandshake className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>पारिवारिक माहौल</span>
+              </div>
+            </div>
+
+            {/* Address & Timings */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 pt-1 border-t border-gray-800/80">
+              <span className="flex items-center gap-1.5 text-gray-300">
+                <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{profile.address || 'Near Main Market'}</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-gray-300">
+                <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{profile.openingHours || '11:00 AM - 11:30 PM'}</span>
+              </span>
+            </div>
+
+          </div>
+
+          {/* Right Column: Authentic Store Food & Ambiance Photos */}
+          <div className="lg:col-span-5 space-y-3">
+            
+            {/* Main Featured Photo (Restaurant Dining Area) */}
+            <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 group shadow-lg h-44 sm:h-48 bg-black">
+              <img
+                src={profile.bannerImage || '/images/restaurant-interior.webp'}
+                alt="Garam Masala Family Restaurant Ambiance"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => {
+                  e.target.src = '/images/restaurant-interior.webp';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 block">
+                  Family Dining Hall
+                </span>
+                <p className="text-xs font-semibold text-gray-200">
+                  आरामदेह व पारिवारिक बैठने की व्यवस्था
+                </p>
+              </div>
+            </div>
+
+            {/* Mini Gallery (Real Dishes) */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl overflow-hidden border border-gray-800 relative group h-20 bg-black">
+                <img
+                  src="/images/tandoori-roti-gravy.webp"
+                  alt="Tandoori Roti & Gravy"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
+                  तंदूरी रोटियाँ
+                </span>
+              </div>
+
+              <div className="rounded-xl overflow-hidden border border-gray-800 relative group h-20 bg-black">
+                <img
+                  src="/images/crispy-chilli-potato.jpg"
+                  alt="Crispy Chilli Potato"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
+                  चिली पोटैटो
+                </span>
+              </div>
+
+              <div className="rounded-xl overflow-hidden border border-gray-800 relative group h-20 bg-black">
+                <img
+                  src="/images/desi-chowmein.jpg"
+                  alt="Desi Chowmein"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
+                  देसी चाउमीन
+                </span>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </div>
 
