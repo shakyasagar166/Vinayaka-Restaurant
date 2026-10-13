@@ -3,9 +3,11 @@ const API_BASE_URL = rawApiUrl ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${ra
 
 // Cross-tab broadcast channel for real-time synchronization across all tabs and windows
 let broadcastChannel = null;
+let legacyChannel = null;
 try {
   if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-    broadcastChannel = new BroadcastChannel('vinayaka_restaurant_channel');
+    broadcastChannel = new BroadcastChannel('garam_masala_restaurant_channel');
+    legacyChannel = new BroadcastChannel('vinayaka_restaurant_channel');
   }
 } catch (e) {
   console.warn("BroadcastChannel not available:", e);
@@ -13,9 +15,9 @@ try {
 
 function broadcastEvent(type, payload) {
   try {
-    if (broadcastChannel) {
-      broadcastChannel.postMessage({ type, payload, timestamp: Date.now() });
-    }
+    const msg = { type, payload, timestamp: Date.now() };
+    if (broadcastChannel) broadcastChannel.postMessage(msg);
+    if (legacyChannel) legacyChannel.postMessage(msg);
   } catch (e) {
     console.warn("Broadcast error:", e);
   }

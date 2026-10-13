@@ -1,6 +1,35 @@
-# 🚀 Vinayaka Restaurant: Production Deployment Guide (Vercel + Render + Neon)
+# 🚀 Garam Masala Family Restaurant: Production Deployment & Domain Guide
 
-यह गाइड आपको अपनी वेबसाइट को 100% लाइव इंटरनेट पर पब्लिश करने में मदद करेगी ताकि कोई भी ग्राहक अपनी डाइनिंग टेबल से QR कोड स्कैन करके असली ऑर्डर दे सके!
+Yeh guide aapko apni website ko Vercel + Render + Aiven/MySQL par live publish karne aur **Domain name ko Vinayaka se badalkar Garam Masala karne** ke pure steps explain karti hai!
+
+---
+
+## 🌐 Vercel Par Domain Name Kaise Badlein (Vinayaka Se Garam Masala)
+
+Agar aapki website pehle se Vercel par live hai aur uska domain `vinayaka-restaurant.vercel.app` aa raha hai, to usko **`garam-masala`** karne ke liye ye 4 aasan steps follow karein:
+
+### Step 1: Vercel Dashboard Kholein
+1. [https://vercel.com](https://vercel.com) par jayein aur login karein.
+2. Apne restaurant wale project par click karein.
+
+### Step 2: Settings ➔ Domains Me Jayein
+1. Upar menu bar me **"Settings"** par click karein.
+2. Left sidebar menu me **"Domains"** par click karein.
+
+### Step 3: Naya Domain Add / Edit Karein
+1. Aapko wahan purana domain dikhega (jaise `vinayaka-restaurant.vercel.app`).
+2. Box me naya domain name likhein, jaise:
+   - 👉 **`garam-masala-restaurant.vercel.app`**
+   - ya 👉 **`ghaziabad-garam-masala.vercel.app`**
+   - ya 👉 **`garammasala-restaurant.vercel.app`**
+   *(Note: Vercel par jo subdomain free aur available hoga wo turant assign ho jayega!)*
+3. **"Add"** ya **"Save"** button dabayein.
+4. Purane `vinayaka` wale domain ko aap wahi **Delete** kar sakte hain ya redirect bana sakte hain!
+
+### Step 4 (Optional): Project Name Bhi Badlein
+1. **Settings** ➔ **General** me jayein.
+2. **Project Name** me `vinayaka-restaurant` ki jagah likhein: **`garam-masala-restaurant`**
+3. **Save** button dabayein.
 
 ---
 

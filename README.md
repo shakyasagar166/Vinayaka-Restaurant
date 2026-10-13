@@ -1,7 +1,7 @@
-# 🌟 Vinayaka Restaurant (Rooftop & Lounge) - QR Dine-In Ordering System
+# 🌟 Garam Masala Family Restaurant - QR Dine-In Ordering System
 
-> **कॉन्टैक्टलेस डाइनिंग & किचन मैनेजमेंट सिस्टम (QR Code Table Ordering Platform)**  
-> **Tech Stack:** Spring Boot 3 (Java 17), MySQL 8.0, React 18 (Vite, Tailwind CSS, Lucide Icons, QRCode.react)
+> **Contactless Dining & Kitchen Management System (QR Code Table Ordering Platform)**  
+> **Tech Stack:** Spring Boot 3 (Java 17), Aiven MySQL, React 18 (Vite, Tailwind CSS, Lucide Icons, QRCode.react)
 
 ---
 
