@@ -7,11 +7,9 @@ services:
     plan: free
     region: oregon
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: DATABASE_URL
         sync: false
-      - key: SPRING_DATASOURCE_USERNAME
-        sync: false
-      - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
+      - key: PORT
+        value: 8080
       - key: JWT_SECRET
         value: VinayakaRestaurantRooftopLoungeSuperSecretKey2026SecureJwt384BitsLong
