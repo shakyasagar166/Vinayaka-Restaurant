@@ -527,12 +527,12 @@ export const api = {
 
     return {
       restaurantName: "Garam Masala Family Restaurant",
-      tagline: "असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल",
+      tagline: "Asli Swad, Shuddh Masale & Parivarik Mahol",
       ownerName: "Sagar Shakya",
       ownerTitle: "Restaurant Owner & Host",
-      aboutStory: "गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।",
+      aboutStory: "Garam Masala Family Restaurant me aapka hardik swagat hai! Hum apne customers ko shuddh, taaza aur lajawab swad parosne ke liye committed hain. Hamare yahan special tandoori rotiya, dal handi, paneer dishes, crispy chilli potato aur desi chowmein authentic swad me taiyar ki jaati hain.",
       contactPhone: "+91 98765 43210",
-      address: "Garam Masala Restaurant, Near Main Market",
+      address: "Garam Masala Restaurant, Near Main Market, Ghaziabad",
       openingHours: "11:00 AM - 11:30 PM (Daily)",
       bannerImage: "/images/restaurant-interior.webp"
     };

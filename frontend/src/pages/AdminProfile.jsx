@@ -5,12 +5,12 @@ import { api } from '../api/api';
 export default function AdminProfile() {
   const [profile, setProfile] = useState({
     restaurantName: 'Garam Masala Family Restaurant',
-    tagline: 'असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल',
+    tagline: 'Asli Swad, Shuddh Masale & Parivarik Mahol',
     ownerName: 'Sagar Shakya',
-    ownerTitle: 'Owner & Host',
-    aboutStory: 'गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।',
+    ownerTitle: 'Restaurant Owner & Host',
+    aboutStory: 'Garam Masala Family Restaurant me aapka hardik swagat hai! Hum apne customers ko shuddh, taaza aur lajawab swad parosne ke liye committed hain. Hamare yahan special tandoori rotiya, dal handi, paneer dishes, crispy chilli potato aur desi chowmein authentic swad me taiyar ki jaati hain.',
     contactPhone: '+91 98765 43210',
-    address: 'Garam Masala Restaurant, Near Main Market',
+    address: 'Garam Masala Restaurant, Near Main Market, Ghaziabad',
     openingHours: '11:00 AM - 11:30 PM (Daily)',
     bannerImage: '/images/restaurant-interior.webp'
   });
@@ -44,7 +44,7 @@ export default function AdminProfile() {
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4000);
     } catch (err) {
-      alert("Profile save karne me samasya aayi: " + (err.message || 'Error'));
+      alert("Profile save karne me issue aaya: " + (err.message || 'Error'));
     } finally {
       setSaving(false);
     }
@@ -62,7 +62,7 @@ export default function AdminProfile() {
     return (
       <div className="py-12 text-center text-amber-300">
         <Store className="w-8 h-8 animate-spin mx-auto mb-2 text-amber-400" />
-        <p className="text-sm">रेस्टोरेंट प्रोफ़ाइल लोड हो रही है...</p>
+        <p className="text-sm">Restaurant profile load ho rahi hai...</p>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function AdminProfile() {
                 Restaurant &amp; Owner Profile Settings
               </h3>
               <p className="text-xs text-gray-400">
-                यहाँ से रेस्टोरेंट का नाम, ओनर (मालिक) की जानकारी और स्टोरी सेट करें — यह कस्टमर मेनू पर तुरंत दिखेगा।
+                Yahan se restaurant ka naam, owner info aur story update karein — ye customer menu par live dikhega.
               </p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function AdminProfile() {
           {savedSuccess && (
             <div className="px-4 py-2 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold flex items-center gap-1.5 shadow-lg animate-bounce">
               <Check className="w-4 h-4 text-emerald-400" />
-              <span>जानकारी सफलता पूर्वक सुरक्षित हो गई! (Saved &amp; Synced)</span>
+              <span>Profile details successfully save &amp; sync ho gayi!</span>
             </div>
           )}
         </div>
@@ -107,7 +107,7 @@ export default function AdminProfile() {
               <div>
                 <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center gap-1">
                   <Store className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Restaurant Name (रेस्टोरेंट का नाम)</span>
+                  <span>Restaurant Name</span>
                 </label>
                 <input
                   type="text"
@@ -122,13 +122,13 @@ export default function AdminProfile() {
               <div>
                 <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Tagline / Slogan (स्लोगन)</span>
+                  <span>Tagline / Slogan</span>
                 </label>
                 <input
                   type="text"
                   value={profile.tagline || ''}
                   onChange={(e) => setProfile({ ...profile, tagline: e.target.value })}
-                  placeholder="असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल"
+                  placeholder="Asli Swad, Shuddh Masale &amp; Parivarik Mahol"
                   className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
                 />
               </div>
@@ -138,13 +138,13 @@ export default function AdminProfile() {
             <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4">
               <div className="flex items-center gap-2 text-amber-300 text-xs font-bold uppercase tracking-wider">
                 <User className="w-4 h-4 text-amber-400" />
-                <span>Owner &amp; Management Information (ओनर / संचालक)</span>
+                <span>Owner &amp; Management Information</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                    Owner Name (ओनर का नाम)
+                    Owner Name
                   </label>
                   <input
                     type="text"
@@ -158,7 +158,7 @@ export default function AdminProfile() {
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                    Owner Role / Title (पद)
+                    Owner Role / Title
                   </label>
                   <input
                     type="text"
@@ -175,13 +175,13 @@ export default function AdminProfile() {
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center gap-1">
                 <HeartHandshake className="w-3.5 h-3.5 text-amber-400" />
-                <span>About Restaurant &amp; Our Story (रेस्टोरेंट और भोजन की विशेषता)</span>
+                <span>About Restaurant &amp; Our Story</span>
               </label>
               <textarea
                 rows={4}
                 value={profile.aboutStory || ''}
                 onChange={(e) => setProfile({ ...profile, aboutStory: e.target.value })}
-                placeholder="रेस्टोरेंट की खासियत, असली मसालों का स्वाद, और ग्राहकों के स्वागत के बारे में लिखें..."
+                placeholder="Restaurant ki khasiyat, authentic masalo ka swad, aur guests welcome ke baare me likhein..."
                 className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none leading-relaxed"
               />
             </div>
@@ -225,7 +225,7 @@ export default function AdminProfile() {
                   type="text"
                   value={profile.address || ''}
                   onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                  placeholder="Near Main Market"
+                  placeholder="Near Main Market, Ghaziabad"
                   className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
                 />
               </div>
@@ -235,7 +235,7 @@ export default function AdminProfile() {
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center gap-1">
                 <Image className="w-3.5 h-3.5 text-amber-400" />
-                <span>Restaurant Banner / Ambiance Photo (रेस्टोरेंट की फ़ोटो)</span>
+                <span>Restaurant Banner / Ambiance Photo</span>
               </label>
               <input
                 type="text"
@@ -246,7 +246,7 @@ export default function AdminProfile() {
               />
 
               <div className="flex flex-wrap gap-2 pt-1">
-                <span className="text-[11px] text-gray-400 self-center">असली फ़ोटो चुनें:</span>
+                <span className="text-[11px] text-gray-400 self-center">Choose Store Photo:</span>
                 {storePhotoPresets.map((photo, i) => (
                   <button
                     key={i}
@@ -272,11 +272,11 @@ export default function AdminProfile() {
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-extrabold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/20 active:scale-98 transition-all disabled:opacity-50"
               >
                 {saving ? (
-                  <span>सेव हो रहा है...</span>
+                  <span>Saving Profile...</span>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    <span>Save Restaurant Profile (सुरक्षित करें)</span>
+                    <span>Save Restaurant Profile</span>
                   </>
                 )}
               </button>
@@ -334,7 +334,7 @@ export default function AdminProfile() {
 
             {/* Story excerpt */}
             <div className="text-xs text-gray-300 bg-black/40 p-3.5 rounded-xl border border-gray-800/80 leading-relaxed italic">
-              "{profile.aboutStory || 'Welcome to our authentic culinary home!'}"
+              "{profile.aboutStory || 'Welcome to Garam Masala Family Restaurant!'}"
             </div>
 
             {/* Contact quick preview */}
@@ -349,14 +349,14 @@ export default function AdminProfile() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>{profile.address || 'Main Market'}</span>
+                <span>{profile.address || 'Ghaziabad'}</span>
               </div>
             </div>
 
           </div>
 
           <div className="pt-4 border-t border-gray-800 text-[11px] text-gray-500 text-center">
-            यह कार्ड कस्टमर के मुख्य पेज पर 'About Restaurant' में लाइव दिखेगा।
+            Yeh card customer ke main page par 'About Restaurant' me live dikhta hai.
           </div>
         </div>
 

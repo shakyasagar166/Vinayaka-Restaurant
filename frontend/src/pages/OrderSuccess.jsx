@@ -76,10 +76,10 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
 
   // Determine active step index
   const statusSteps = [
-    { key: 'PENDING', label: 'Order Received', hindi: 'ऑर्डर प्राप्त हुआ', icon: Clock },
-    { key: 'PREPARING', label: 'In Kitchen', hindi: 'रसोई में बन रहा है', icon: ChefHat },
-    { key: 'SERVED', label: 'Served on Table', hindi: 'टेबल पर परोसा गया', icon: UtensilsCrossed },
-    { key: 'COMPLETED', label: 'Completed', hindi: 'पूर्ण हुआ', icon: CheckCheck }
+    { key: 'PENDING', label: 'Order Received', hindi: 'Order Receive Hua', icon: Clock },
+    { key: 'PREPARING', label: 'In Kitchen', hindi: 'Kitchen Me Ban Raha Hai', icon: ChefHat },
+    { key: 'SERVED', label: 'Served on Table', hindi: 'Table Par Serve Hua', icon: UtensilsCrossed },
+    { key: 'COMPLETED', label: 'Completed', hindi: 'Order Complete', icon: CheckCheck }
   ];
 
   const getStepIndex = (status) => {
@@ -186,7 +186,7 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
       {/* Order Items Breakdown */}
       <div className="glass-panel rounded-3xl p-5 sm:p-6 space-y-4">
         <h3 className="font-bold text-sm sm:text-base text-gray-200 border-b border-gray-800 pb-3">
-          Order Summary / विवरण
+          Order Summary &amp; Bill Breakdown
         </h3>
 
         <div className="space-y-3">

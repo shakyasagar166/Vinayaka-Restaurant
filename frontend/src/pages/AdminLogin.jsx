@@ -65,7 +65,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username दर्ज करें"
+                placeholder="Enter admin username"
                 className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none transition-colors"
               />
             </div>
@@ -82,7 +82,7 @@ export default function AdminLogin({ onLoginSuccess, onCancel }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password दर्ज करें"
+                placeholder="Enter password"
                 className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none transition-colors"
               />
             </div>

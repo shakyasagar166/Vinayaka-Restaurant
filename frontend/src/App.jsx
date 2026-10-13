@@ -86,7 +86,7 @@ function MainApp() {
             Garam Masala Family Restaurant
           </p>
           <p className="text-gray-400">
-            असली स्वाद &bull; शुद्ध मसाले &bull; पारिवारिक माहौल &bull; Authentic Taste
+            Asli Swad &bull; Shuddh Masale &bull; Pure Family Dining &bull; Authentic Taste
           </p>
           <div className="pt-2 flex justify-center items-center gap-4 text-[11px]">
             <button

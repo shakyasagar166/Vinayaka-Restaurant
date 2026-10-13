@@ -173,7 +173,7 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           }`}
         >
           <ChefHat className="w-4 h-4" />
-          <span>Live Kitchen Orders (ऑर्डर बोर्ड)</span>
+          <span>Live Kitchen Orders</span>
           {stats.pendingOrders > 0 && (
             <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-black text-[10px] font-black animate-pulse">
               {stats.pendingOrders}
@@ -190,7 +190,7 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           }`}
         >
           <Utensils className="w-4 h-4" />
-          <span>Menu &amp; Stock Control ("आज क्या क्या है")</span>
+          <span>Menu &amp; Stock Control (In Stock / Sold Out)</span>
         </button>
 
         <button
@@ -214,7 +214,7 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           }`}
         >
           <Store className="w-4 h-4" />
-          <span>About &amp; Owner Profile (रेस्टोरेंट व ओनर)</span>
+          <span>About &amp; Owner Profile</span>
         </button>
       </div>
 

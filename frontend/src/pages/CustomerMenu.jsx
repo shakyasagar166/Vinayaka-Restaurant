@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Sparkles, Utensils, Star, MapPin, ChevronRight, RefreshCw, Flame, Clock, Check, Phone, Store, User, HeartHandshake, ShieldCheck, Info } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Sparkles, Utensils, Star, MapPin, ChevronLeft, ChevronRight, RefreshCw, Flame, Clock, Check, Phone, Store, User, HeartHandshake, ShieldCheck, Info } from 'lucide-react';
 import MenuCard from '../components/MenuCard';
 import { useCart } from '../context/CartContext';
 import { api } from '../api/api';
 
 const CATEGORY_ICONS = {
   'All': '🌟',
-  'Starters & Snacks': '🔥',
-  'Main Course': '🍛',
-  'Tandoori Breads & Rice': '🫓',
-  'Beverages & Shakes': '🍹',
-  'Desserts': '🍨'
+  'Veg Starters': '🍢',
+  'Paneer Tikka': '🧀',
+  'Rolls': '🌯',
+  'Chinese Starters': '🥢',
+  'Noodles': '🍜',
+  'Rice': '🍚',
+  'Sub-E-Bahar': '🍲',
+  'Paneer': '🍛',
+  'Mushroom Special': '🍄',
+  'Breads': '🫓'
 };
 
 export default function CustomerMenu({ onNavigate }) {
@@ -26,16 +31,23 @@ export default function CustomerMenu({ onNavigate }) {
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showStory, setShowStory] = useState(false);
+  const categoryScrollRef = useRef(null);
 
-  // Restaurant Profile State
+  const slideCategories = (offset) => {
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
+
+  // Restaurant Profile State in Hinglish
   const [profile, setProfile] = useState({
     restaurantName: 'Garam Masala Family Restaurant',
-    tagline: 'असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल',
+    tagline: 'Asli Swad, Shuddh Masale & Parivarik Mahol',
     ownerName: 'Sagar Shakya',
     ownerTitle: 'Restaurant Owner & Host',
-    aboutStory: 'गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं। हमारे यहाँ विशेष तंदूरी रोटियाँ, स्वादिष्ट पनीर व दाल हांडी, क्रिस्पी चिली पोटैटो, और देसी चाउमीन खास अंदाज़ में तैयार की जाती हैं।',
+    aboutStory: 'Garam Masala Family Restaurant me aapka hardik swagat hai! Hum apne customers ko shuddh, taaza aur lajawab swad parosne ke liye committed hain. Hamare yahan special tandoori rotiya, dal handi, paneer dishes, crispy chilli potato aur desi chowmein authentic swad me taiyar ki jaati hain.',
     contactPhone: '+91 98765 43210',
-    address: 'Garam Masala Restaurant, Near Main Market',
+    address: 'Garam Masala Restaurant, Near Main Market, Ghaziabad',
     openingHours: '11:00 AM - 11:30 PM (Daily)',
     bannerImage: '/images/restaurant-interior.webp'
   });
@@ -176,7 +188,7 @@ export default function CustomerMenu({ onNavigate }) {
               {profile.restaurantName || "Garam Masala Family Restaurant"}
             </h1>
             <p className="font-heading italic text-amber-400 text-base sm:text-lg flex flex-wrap items-center gap-2">
-              <span>{profile.tagline || "असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल"}</span>
+              <span>{profile.tagline || "Asli Swad, Shuddh Masale aur Parivarik Mahol"}</span>
               <span className="text-gray-400 text-xs font-sans not-italic">&bull; Open {profile.openingHours || '11:00 AM - 11:30 PM'}</span>
             </p>
             <p className="text-gray-300 text-xs sm:text-sm max-w-xl leading-relaxed">
@@ -200,7 +212,7 @@ export default function CustomerMenu({ onNavigate }) {
                 className="text-amber-400 hover:text-amber-300 underline font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Info className="w-3.5 h-3.5" />
-                <span>{showStory ? "Hide Story / छुपाएं" : "About & Owner Story (ओनर के बारे में)"}</span>
+                <span>{showStory ? "Hide Story" : "About & Owner Story"}</span>
               </button>
             </div>
           </div>
@@ -237,11 +249,11 @@ export default function CustomerMenu({ onNavigate }) {
               <h3 className="font-cinzel text-lg sm:text-xl font-bold text-amber-300 flex items-center gap-2">
                 <span>About Our Restaurant &amp; Owner</span>
                 <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-sans font-bold">
-                  हमारी पहचान
+                  Hamari Pehchan
                 </span>
               </h3>
               <p className="text-xs text-gray-400">
-                {profile.tagline || 'असली स्वाद, शुद्ध मसाले और पारिवारिक माहौल'}
+                {profile.tagline || 'Asli Swad, Shuddh Masale aur Parivarik Mahol'}
               </p>
             </div>
           </div>
@@ -272,7 +284,7 @@ export default function CustomerMenu({ onNavigate }) {
               </div>
               <div className="space-y-0.5">
                 <span className="text-[10px] text-amber-400 uppercase font-black tracking-widest block">
-                  Meet The Host / रेस्टोरेंट संचालक
+                  Meet The Host / Restaurant Owner
                 </span>
                 <h4 className="text-base sm:text-lg font-bold text-white">
                   {profile.ownerName || 'Sagar Shakya'}
@@ -286,7 +298,7 @@ export default function CustomerMenu({ onNavigate }) {
             {/* Story / About text */}
             <div className="text-xs sm:text-sm text-gray-300 leading-relaxed bg-black/40 p-4 rounded-2xl border border-gray-800 space-y-2">
               <p className="italic text-gray-200">
-                "{profile.aboutStory || 'गरम मसाला फैमिली रेस्टोरेंट में आपका हार्दिक स्वागत है! हम अपने ग्राहकों को शुद्ध, ताज़ा और लाजवाब स्वाद परोसने के लिए प्रतिबद्ध हैं।'}"
+                "{profile.aboutStory || 'Garam Masala Family Restaurant me aapka hardik swagat hai! Ham apne customers ko shuddh, taaza aur lajawab swad parosne ke liye pratibaddh hain.'}"
               </p>
             </div>
 
@@ -294,15 +306,15 @@ export default function CustomerMenu({ onNavigate }) {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-gray-300 pt-1">
               <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>100% शुद्ध खड़े मसाले</span>
+                <span>100% Shuddh Khade Masale</span>
               </div>
               <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2">
                 <Flame className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>ताज़ा तंदूरी तैयारी</span>
+                <span>Taaza Tandoor Preparation</span>
               </div>
               <div className="p-2.5 rounded-xl bg-black/40 border border-gray-800 flex items-center gap-2 col-span-2 sm:col-span-1">
                 <HeartHandshake className="w-4 h-4 text-rose-400 shrink-0" />
-                <span>पारिवारिक माहौल</span>
+                <span>Family Dining Mahol</span>
               </div>
             </div>
 
@@ -339,7 +351,7 @@ export default function CustomerMenu({ onNavigate }) {
                   Family Dining Hall
                 </span>
                 <p className="text-xs font-semibold text-gray-200">
-                  आरामदेह व पारिवारिक बैठने की व्यवस्था
+                  Aaramdayak Family Seating Mahol
                 </p>
               </div>
             </div>
@@ -354,7 +366,7 @@ export default function CustomerMenu({ onNavigate }) {
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
                 <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
-                  तंदूरी रोटियाँ
+                  Tandoori Breads
                 </span>
               </div>
 
@@ -366,7 +378,7 @@ export default function CustomerMenu({ onNavigate }) {
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
                 <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
-                  चिली पोटैटो
+                  Chilli Potato
                 </span>
               </div>
 
@@ -378,7 +390,7 @@ export default function CustomerMenu({ onNavigate }) {
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
                 <span className="absolute bottom-1 left-1.5 right-1 text-[9px] font-bold text-amber-300 truncate drop-shadow">
-                  देसी चाउमीन
+                  Chinese Noodles
                 </span>
               </div>
             </div>
@@ -429,7 +441,7 @@ export default function CustomerMenu({ onNavigate }) {
             <div className="w-3 h-3 border-2 border-emerald-500 rounded flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
             </div>
-            <span>Pure Veg (शाकाहारी)</span>
+            <span>Pure Veg</span>
           </button>
 
           {/* Non Veg Toggle */}
@@ -447,7 +459,7 @@ export default function CustomerMenu({ onNavigate }) {
             <div className="w-3 h-3 border-2 border-red-500 rounded flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
             </div>
-            <span>Non-Veg (मांसाहारी)</span>
+            <span>Non-Veg</span>
           </button>
 
           {/* Chef's Signature Toggle */}
@@ -498,35 +510,61 @@ export default function CustomerMenu({ onNavigate }) {
           </button>
         </div>
 
-        {/* Categories Horizontal Slider */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1">
-          {categories.map((cat) => {
-            const count = cat === 'All'
-              ? menuItems.length
-              : menuItems.filter(i => i.category === cat).length;
-            const isActive = activeCategory === cat;
-            const icon = CATEGORY_ICONS[cat] || '🍽️';
+        {/* Categories Horizontal Slider with Left/Right Buttons */}
+        <div className="relative flex items-center group pt-1">
+          {/* Scroll Left Button */}
+          <button
+            type="button"
+            onClick={() => slideCategories(-240)}
+            aria-label="Slide Categories Left"
+            className="flex absolute left-0 z-10 w-8 h-8 rounded-full bg-black/90 border border-amber-500/50 text-amber-300 items-center justify-center shadow-xl hover:bg-amber-500 hover:text-black transition-all active:scale-95 hover:scale-105"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
 
-            return (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/25 ring-2 ring-amber-400/50'
-                    : 'bg-[#101524] text-gray-300 hover:text-white hover:bg-gray-800/80 border border-gray-800'
-                }`}
-              >
-                <span>{icon}</span>
-                <span>{cat}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                  isActive ? 'bg-black/30 text-black' : 'bg-gray-800 text-gray-400'
-                }`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+          {/* Scrollable Categories Track */}
+          <div
+            ref={categoryScrollRef}
+            className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-8 py-1 w-full"
+          >
+            {categories.map((cat) => {
+              const count = cat === 'All'
+                ? menuItems.length
+                : menuItems.filter(i => i.category === cat).length;
+              const isActive = activeCategory === cat;
+              const icon = CATEGORY_ICONS[cat] || '🍽️';
+
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/25 ring-2 ring-amber-400/50'
+                      : 'bg-[#101524] text-gray-300 hover:text-white hover:bg-gray-800/80 border border-gray-800'
+                  }`}
+                >
+                  <span>{icon}</span>
+                  <span>{cat}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    isActive ? 'bg-black/30 text-black' : 'bg-gray-800 text-gray-400'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Scroll Right Button */}
+          <button
+            type="button"
+            onClick={() => slideCategories(240)}
+            aria-label="Slide Categories Right"
+            className="flex absolute right-0 z-10 w-8 h-8 rounded-full bg-black/90 border border-amber-500/50 text-amber-300 items-center justify-center shadow-xl hover:bg-amber-500 hover:text-black transition-all active:scale-95 hover:scale-105"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
 
       </div>

@@ -112,13 +112,13 @@ export default function AdminOrders() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse">New Order / नया</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse">New Order / Naya</span>;
       case 'PREPARING':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 border border-blue-500/50">Cooking / बन रहा है</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 border border-blue-500/50">Cooking / In Kitchen</span>;
       case 'SERVED':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-400 border border-purple-500/50">Served / परोसा गया</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-400 border border-purple-500/50">Served / On Table</span>;
       case 'COMPLETED':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50">Paid / पूर्ण</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50">Completed / Paid</span>;
       case 'CANCELLED':
         return <span className="px-3 py-1 rounded-full text-xs font-black bg-red-500/20 text-red-400 border border-red-500/50">Cancelled</span>;
       default:

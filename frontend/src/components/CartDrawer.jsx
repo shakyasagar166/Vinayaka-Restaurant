@@ -291,7 +291,7 @@ export default function CartDrawer({ onOrderSuccess }) {
                   <span>Sending Order to Kitchen...</span>
                 ) : (
                   <>
-                    <span>Place Order (ऑर्डर भेजें)</span>
+                    <span>Place Order (Send to Kitchen)</span>
                     <ArrowRight className="w-5 h-5 font-black" />
                   </>
                 )}

@@ -70,7 +70,7 @@ export default function AdminTablesQr() {
       <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-900/60 p-5 rounded-2xl border border-gray-800">
         <div>
           <h3 className="font-cinzel text-xl font-bold text-amber-300">
-            Dining Tables &amp; Table QR Standees (क्यूआर कोड जनरेटर)
+            Dining Tables &amp; Table QR Standees (Live QR Generator)
           </h3>
           <p className="text-xs text-gray-400 mt-1">
             Har table ka apna unique QR code hai. Customer scan karte hi us table ka menu khul jayega!

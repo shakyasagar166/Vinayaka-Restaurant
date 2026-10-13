@@ -234,14 +234,14 @@ export default function AdminMenu() {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-amber-300">
-              Menu &amp; Daily Stock Control ("आज क्या क्या है")
+              Menu &amp; Daily Stock Control (In Stock / Sold Out)
             </h3>
             <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-bold border border-amber-500/30">
               Live Sync
             </span>
           </div>
           <p className="text-xs text-gray-400 mt-1 max-w-xl">
-            Nayi dish photo ke sath add karein. Jo item aaj kitchen mein nahi hai use ek click mein <strong>"Sold Out"</strong> karein, aur jaise hi available ho <strong>"In Stock"</strong> karein — customer ko turant dikhega!
+            Nayi dish photo ke sath add karein. Jo item aaj kitchen me nahi hai use ek click me <strong>"Sold Out"</strong> karein, aur jaise hi available ho <strong>"In Stock"</strong> karein — customer ko turant dikhega!
           </p>
         </div>
 
@@ -250,7 +250,7 @@ export default function AdminMenu() {
           className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all whitespace-nowrap"
         >
           <Plus className="w-4 h-4 font-black" />
-          <span>+ Add New Dish (नई डिश जोड़ें)</span>
+          <span>+ Add New Dish</span>
         </button>
       </div>
 
@@ -297,10 +297,10 @@ export default function AdminMenu() {
               <table className="w-full text-left text-xs text-gray-300">
                 <thead className="bg-black/70 text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-800">
                   <tr>
-                    <th className="py-4 px-5">Food Dish (खाना / पेय)</th>
+                    <th className="py-4 px-5">Food Dish (Menu Item)</th>
                     <th className="py-4 px-4">Category</th>
                     <th className="py-4 px-4">Price</th>
-                    <th className="py-4 px-4 text-center">Status (आज ग्राहक को दिखेगा?)</th>
+                    <th className="py-4 px-4 text-center">Status (Customer View)</th>
                     <th className="py-4 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -367,12 +367,12 @@ export default function AdminMenu() {
                           {(item.isAvailableToday ?? item.availableToday ?? true) ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              <span>In Stock (उपलब्ध है)</span>
+                              <span>In Stock (Available)</span>
                             </>
                           ) : (
                             <>
                               <X className="w-3.5 h-3.5 text-red-400" />
-                              <span>Sold Out (आज खत्म)</span>
+                              <span>Sold Out</span>
                             </>
                           )}
                         </button>
@@ -471,12 +471,12 @@ export default function AdminMenu() {
                   {(item.isAvailableToday ?? item.availableToday ?? true) ? (
                     <>
                       <Check className="w-4 h-4 text-emerald-400" />
-                      <span>In Stock (उपलब्ध है - ग्राहक को दिखेगा)</span>
+                      <span>In Stock (Available - Customer ko dikhega)</span>
                     </>
                   ) : (
                     <>
                       <X className="w-4 h-4 text-red-400" />
-                      <span>Sold Out (आज खत्म - ग्राहक को दिखेगा)</span>
+                      <span>Sold Out (Customer ko Sold Out dikhega)</span>
                     </>
                   )}
                 </button>
@@ -500,7 +500,7 @@ export default function AdminMenu() {
                   <Plus className="w-4 h-4 font-bold" />
                 </div>
                 <h3 className="font-cinzel text-lg font-bold text-amber-400">
-                  {editingItem ? 'Edit Dish Details' : 'Add New Dish (नई डिश जोड़ें)'}
+                  {editingItem ? 'Edit Dish Details' : 'Add New Dish'}
                 </h3>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
@@ -515,7 +515,7 @@ export default function AdminMenu() {
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-amber-300 flex items-center gap-1.5">
                     <Camera className="w-4 h-4 text-amber-400" />
-                    <span>Dish Photo (फोटो अपलोड करें)</span>
+                    <span>Dish Photo (Upload Photo)</span>
                   </label>
                   
                   {/* Photo tabs */}
@@ -583,10 +583,10 @@ export default function AdminMenu() {
                           className="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black font-bold text-xs border border-amber-500/40 flex items-center justify-center gap-2 transition-all shadow-sm"
                         >
                           <Upload className="w-4 h-4" />
-                          <span>Choose Photo / कैमरा या गैलरी से फोटो चुनें</span>
+                          <span>Choose Photo (Camera or Gallery)</span>
                         </button>
                         <p className="text-[10px] text-gray-500 mt-1">
-                          Apne computer ya mobile se seedha food photo select karein.
+                          Apne device se food photo select karein.
                         </p>
                       </div>
                     )}
@@ -631,14 +631,14 @@ export default function AdminMenu() {
               {/* Dish Name */}
               <div>
                 <label className="block text-gray-300 mb-1 font-bold">
-                  Dish Name (डिश का नाम) <span className="text-amber-400">*</span>
+                  Dish Name <span className="text-amber-400">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Tandoori Paneer Tikka / Crispy Corn"
+                  placeholder="e.g. Malai Chaap / Dal Makhni / Chilli Potato"
                   className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
                 />
               </div>
@@ -652,11 +652,16 @@ export default function AdminMenu() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
                   >
-                    <option value="Rooftop Starters">Rooftop Starters</option>
-                    <option value="Main Course">Main Course</option>
-                    <option value="Breads & Rice">Breads & Rice</option>
-                    <option value="Rooftop Mocktails">Rooftop Mocktails</option>
-                    <option value="Desserts">Desserts</option>
+                    <option value="Veg Starters">Veg Starters</option>
+                    <option value="Paneer Tikka">Paneer Tikka</option>
+                    <option value="Rolls">Rolls</option>
+                    <option value="Chinese Starters">Chinese Starters</option>
+                    <option value="Noodles">Noodles</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Sub-E-Bahar">Sub-E-Bahar</option>
+                    <option value="Paneer">Paneer</option>
+                    <option value="Mushroom Special">Mushroom Special</option>
+                    <option value="Breads">Breads</option>
                   </select>
                 </div>
 
@@ -670,7 +675,7 @@ export default function AdminMenu() {
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="e.g. 280"
+                    placeholder="e.g. 150"
                     className="w-full bg-black/60 border border-gray-700 focus:border-amber-400 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
                   />
                 </div>
@@ -678,7 +683,7 @@ export default function AdminMenu() {
 
               {/* Description */}
               <div>
-                <label className="block text-gray-300 mb-1 font-bold">Description / विवरण</label>
+                <label className="block text-gray-300 mb-1 font-bold">Description / Taste Details</label>
                 <textarea
                   rows={2}
                   value={formData.description}
@@ -691,21 +696,21 @@ export default function AdminMenu() {
               {/* Spice & Prep Time */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-300 mb-1 font-bold">Spiciness Level (तीखापन)</label>
+                  <label className="block text-gray-300 mb-1 font-bold">Spiciness Level (Teekhapan)</label>
                   <select
                     value={formData.spicyLevel}
                     onChange={(e) => setFormData({ ...formData, spicyLevel: parseInt(e.target.value, 10) })}
                     className="w-full bg-black/60 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
                   >
-                    <option value={0}>Non-Spicy / Sweet (मिठाई/पेय)</option>
-                    <option value={1}>Mild Spicy (कम तीखा) 🌶️</option>
-                    <option value={2}>Medium Spicy (मीडियम) 🌶️🌶️</option>
-                    <option value={3}>Hot &amp; Fiery (ज़्यादा तीखा) 🌶️🌶️🌶️</option>
+                    <option value={0}>Non-Spicy / Sweet</option>
+                    <option value={1}>Mild Spicy (Kam Teekha) 🌶️</option>
+                    <option value={2}>Medium Spicy (Normal) 🌶️🌶️</option>
+                    <option value={3}>Hot &amp; Fiery (Teekha) 🌶️🌶️🌶️</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-1 font-bold">Prep Time (तैयारी समय)</label>
+                  <label className="block text-gray-300 mb-1 font-bold">Prep Time (Minutes)</label>
                   <input
                     type="number"
                     value={formData.preparationTimeMinutes}
@@ -753,7 +758,7 @@ export default function AdminMenu() {
                       onChange={(e) => setFormData({ ...formData, isAvailableToday: e.target.checked })}
                       className="accent-emerald-400 w-4 h-4 rounded"
                     />
-                    <span className="font-bold text-emerald-300">In Stock (उपलब्ध) ✓</span>
+                    <span className="font-bold text-emerald-300">In Stock (Available) ✓</span>
                   </label>
                 </div>
               </div>
