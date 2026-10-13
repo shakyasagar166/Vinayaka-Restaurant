@@ -81,7 +81,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedMenuItems() {
-        if (menuItemRepository.count() < 5) {
+        // Dishes are added and managed directly by the user from Admin portal
+        if (false) {
             List<MenuItem> items = Arrays.asList(
                     // Rooftop Starters
                     new MenuItem(

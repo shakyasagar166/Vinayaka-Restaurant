@@ -31,204 +31,24 @@ function getAuthHeaders() {
   return headers;
 }
 
-// Initial default menu items for Vinayaka Restaurant (Rooftop & Lounge)
-const FALLBACK_MENU = [
-  {
-    id: 1,
-    name: "Paneer Angara Tikka",
-    description: "Cottage cheese cubes marinated in fiery red spices, smoked over charcoal tandoor with mint glaze.",
-    category: "Rooftop Starters",
-    price: 320,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 3,
-    imageUrl: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 15
-  },
-  {
-    id: 2,
-    name: "Crispy Chilli Baby Corn",
-    description: "Golden fried tender baby corn tossed with bell peppers, spring onions, garlic & sweet-spicy oriental glaze.",
-    category: "Rooftop Starters",
-    price: 260,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: false,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 12
-  },
-  {
-    id: 3,
-    name: "Chicken Afghani Malai Tikka",
-    description: "Succulent boneless chicken chunks marinated in rich cashew cream, grated cheese & cardamom.",
-    category: "Rooftop Starters",
-    price: 380,
-    isVeg: false,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 1,
-    imageUrl: "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 18
-  },
-  {
-    id: 4,
-    name: "Tandoori Soya Chaap",
-    description: "Juicy soya chaap soaked in traditional Amritsari tandoori spices and brushed with butter.",
-    category: "Rooftop Starters",
-    price: 280,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: false,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 15
-  },
-  {
-    id: 5,
-    name: "Vinayaka Loaded Peri Peri Fries",
-    description: "Crispy skin-on potato fries dusted with tangy peri-peri seasoning and drizzled with molten cheddar cheese.",
-    category: "Rooftop Starters",
-    price: 210,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: false,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 10
-  },
-  {
-    id: 6,
-    name: "Vinayaka Dal Makhani Handi",
-    description: "Black lentils slow cooked overnight on low charcoal heat with dairy butter, rich cream & roasted cumin.",
-    category: "Main Course",
-    price: 290,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 1,
-    imageUrl: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 15
-  },
-  {
-    id: 7,
-    name: "Shahi Paneer Lababdar",
-    description: "Soft cottage cheese simmered in a luscious tomato, onion & roasted cashew gravy with grated paneer.",
-    category: "Main Course",
-    price: 340,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 20
-  },
-  {
-    id: 8,
-    name: "Clay Oven Butter Chicken Masala",
-    description: "Tandoor roasted shredded chicken steeped in silky makhani gravy with fenugreek butter glaze.",
-    category: "Main Course",
-    price: 420,
-    isVeg: false,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 20
-  },
-  {
-    id: 9,
-    name: "Butter Garlic Chur-Chur Naan",
-    description: "Crispy multi-layered tandoori naan stuffed with roasted garlic and herbs, crushed with fresh desi ghee.",
-    category: "Breads & Rice",
-    price: 90,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 1,
-    imageUrl: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 10
-  },
-  {
-    id: 10,
-    name: "Hyderabadi Dum Biryani (Handi Veg)",
-    description: "Fragrant aged basmati rice layered with garden vegetables, saffron milk, fried onions & whole spices.",
-    category: "Breads & Rice",
-    price: 290,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 18
-  },
-  {
-    id: 11,
-    name: "Murgh Dum Biryani (Lounge Special)",
-    description: "Slow-cooked marinated chicken layered with aromatic rice, mint, kewra water and saffron.",
-    category: "Breads & Rice",
-    price: 390,
-    isVeg: false,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 2,
-    imageUrl: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 20
-  },
-  {
-    id: 12,
-    name: "Blue Lagoon Citrus Curacao",
-    description: "Refreshing blend of blue curacao, freshly squeezed lime, mint sprig and sparkling fizz on crushed ice.",
-    category: "Rooftop Mocktails",
-    price: 180,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 0,
-    imageUrl: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 5
-  },
-  {
-    id: 13,
-    name: "Vinayaka Sunset Passion Punch",
-    description: "Exotic layered orange, cranberry nectar and passionfruit with citrus wheel and rosemary smoke aroma.",
-    category: "Rooftop Mocktails",
-    price: 220,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 0,
-    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 6
-  },
-  {
-    id: 14,
-    name: "Classic Mint Mojito Fizz",
-    description: "Hand-muddled garden mint leaves, lime chunks, organic cane syrup topped with club soda.",
-    category: "Rooftop Mocktails",
-    price: 160,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: false,
-    spicyLevel: 0,
-    imageUrl: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 5
-  },
-  {
-    id: 15,
-    name: "Hot Sizzling Brownie with Vanilla Gelato",
-    description: "Warm roasted walnut fudge brownie served on a cast iron sizzler plate with pouring hot Belgian dark chocolate.",
-    category: "Desserts",
-    price: 250,
-    isVeg: true,
-    isAvailableToday: true,
-    isChefSpecial: true,
-    spicyLevel: 0,
-    imageUrl: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=700&auto=format&fit=crop&q=80",
-    preparationTimeMinutes: 10
-  }
-];
+// Clean menu initialization - dishes are added directly by restaurant admin
+const FALLBACK_MENU = [];
+
+// Helper to normalize availability properties so 'isAvailableToday' and 'availableToday' are always in sync
+export function normalizeItem(item) {
+  if (!item) return item;
+  const isAvail = (item.isAvailableToday !== undefined)
+    ? Boolean(item.isAvailableToday)
+    : (item.availableToday !== undefined ? Boolean(item.availableToday) : true);
+
+  return {
+    ...item,
+    isAvailableToday: isAvail,
+    availableToday: isAvail,
+    isVeg: (item.isVeg !== undefined) ? Boolean(item.isVeg) : (item.veg !== undefined ? Boolean(item.veg) : true),
+    isChefSpecial: (item.isChefSpecial !== undefined) ? Boolean(item.isChefSpecial) : Boolean(item.chefSpecial)
+  };
+}
 
 const FALLBACK_TABLES = [
   { id: 1, tableNumber: "Rooftop-01", section: "Rooftop Open Air", seatingCapacity: 4, active: true },
@@ -243,26 +63,26 @@ const FALLBACK_TABLES = [
   { id: 10, tableNumber: "Table-03", section: "AC Family Dining", seatingCapacity: 6, active: true },
 ];
 
-// Helper to get local stored menu items with fallback
+// Helper to get local stored menu items
 function getLocalMenuItems() {
   try {
     const raw = localStorage.getItem('mock_menu');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) return parsed.map(normalizeItem);
     }
   } catch (e) {
     console.error("Local storage read error:", e);
   }
-  localStorage.setItem('mock_menu', JSON.stringify(FALLBACK_MENU));
-  return FALLBACK_MENU;
+  return [];
 }
 
 function saveLocalMenuItems(items) {
   try {
-    localStorage.setItem('mock_menu', JSON.stringify(items));
+    const normalized = (items || []).map(normalizeItem);
+    localStorage.setItem('mock_menu', JSON.stringify(normalized));
     window.dispatchEvent(new CustomEvent('vinayaka_menu_updated'));
-    broadcastEvent('MENU_UPDATED', items);
+    broadcastEvent('MENU_UPDATED', normalized);
   } catch (e) {
     console.error("Local storage save error:", e);
   }
@@ -299,9 +119,10 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/menu/all`);
       if (res.ok) {
         const serverItems = await res.json();
-        if (Array.isArray(serverItems) && serverItems.length > 0) {
-          localStorage.setItem('mock_menu', JSON.stringify(serverItems));
-          return serverItems;
+        if (Array.isArray(serverItems)) {
+          const normalized = serverItems.map(normalizeItem);
+          localStorage.setItem('mock_menu', JSON.stringify(normalized));
+          return normalized;
         }
       }
     } catch (e) {
@@ -317,9 +138,10 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/menu/all`, { headers: getAuthHeaders() });
       if (res.ok) {
         const serverItems = await res.json();
-        if (Array.isArray(serverItems) && serverItems.length > 0) {
-          localStorage.setItem('mock_menu', JSON.stringify(serverItems));
-          return serverItems;
+        if (Array.isArray(serverItems)) {
+          const normalized = serverItems.map(normalizeItem);
+          localStorage.setItem('mock_menu', JSON.stringify(normalized));
+          return normalized;
         }
       }
     } catch (e) {

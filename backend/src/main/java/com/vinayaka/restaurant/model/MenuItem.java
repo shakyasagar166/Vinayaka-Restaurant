@@ -110,10 +110,18 @@ public class MenuItem {
         this.isVeg = isVeg;
     }
 
+    @com.fasterxml.jackson.annotation.JsonProperty("isAvailableToday")
     public boolean isAvailableToday() {
         return isAvailableToday;
     }
 
+    @com.fasterxml.jackson.annotation.JsonProperty("availableToday")
+    public boolean getAvailableToday() {
+        return isAvailableToday;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("isAvailableToday")
+    @com.fasterxml.jackson.annotation.JsonAlias({"availableToday", "inStock"})
     public void setAvailableToday(boolean availableToday) {
         this.isAvailableToday = availableToday;
     }

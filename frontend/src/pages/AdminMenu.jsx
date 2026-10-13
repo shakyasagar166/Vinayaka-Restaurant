@@ -64,11 +64,14 @@ export default function AdminMenu() {
   }, []);
 
   const handleToggleAvailability = async (item) => {
-    const updatedStatus = !item.isAvailableToday;
+    const currentStatus = (item.isAvailableToday !== undefined)
+      ? Boolean(item.isAvailableToday)
+      : (item.availableToday !== undefined ? Boolean(item.availableToday) : true);
+    const updatedStatus = !currentStatus;
     try {
       await api.toggleItemAvailability(item.id, updatedStatus);
       setMenuItems(prev =>
-        prev.map(it => String(it.id) === String(item.id) ? { ...it, isAvailableToday: updatedStatus } : it)
+        prev.map(it => String(it.id) === String(item.id) ? { ...it, isAvailableToday: updatedStatus, availableToday: updatedStatus } : it)
       );
     } catch (e) {
       alert("Failed to update stock status: " + e.message);
@@ -351,13 +354,13 @@ export default function AdminMenu() {
                         <button
                           onClick={() => handleToggleAvailability(item)}
                           className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all shadow-sm ${
-                            item.isAvailableToday !== false
+                            (item.isAvailableToday ?? item.availableToday ?? true)
                               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 hover:bg-emerald-500/30 ring-1 ring-emerald-500/30'
                               : 'bg-red-500/20 text-red-300 border border-red-500/50 hover:bg-red-500/30'
                           }`}
                           title="Click to toggle availability"
                         >
-                          {item.isAvailableToday !== false ? (
+                          {(item.isAvailableToday ?? item.availableToday ?? true) ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-emerald-400" />
                               <span>In Stock (उपलब्ध है)</span>
@@ -456,12 +459,12 @@ export default function AdminMenu() {
                 <button
                   onClick={() => handleToggleAvailability(item)}
                   className={`w-full py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all shadow active:scale-95 ${
-                    item.isAvailableToday !== false
+                    (item.isAvailableToday ?? item.availableToday ?? true)
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
                       : 'bg-red-500/20 text-red-300 border border-red-500/50'
                   }`}
                 >
-                  {item.isAvailableToday !== false ? (
+                  {(item.isAvailableToday ?? item.availableToday ?? true) ? (
                     <>
                       <Check className="w-4 h-4 text-emerald-400" />
                       <span>In Stock (उपलब्ध है - ग्राहक को दिखेगा)</span>

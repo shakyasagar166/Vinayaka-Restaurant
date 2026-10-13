@@ -38,9 +38,13 @@ export default function MenuCard({ item }) {
     );
   };
 
+  const isAvailable = (item.isAvailableToday !== undefined)
+    ? Boolean(item.isAvailableToday)
+    : (item.availableToday !== undefined ? Boolean(item.availableToday) : true);
+
   return (
     <div className={`group relative rounded-3xl overflow-hidden transition-all duration-300 flex flex-col justify-between bg-gradient-to-b from-[#111728] via-[#0d121f] to-[#090d16] border border-amber-500/20 shadow-xl ${
-      !item.isAvailableToday
+      !isAvailable
         ? 'opacity-60 grayscale-[30%]'
         : 'hover:border-amber-400/60 hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5'
     }`}>
@@ -110,7 +114,7 @@ export default function MenuCard({ item }) {
         </div>
 
         {/* Sold Out Overlay if unavailable */}
-        {!item.isAvailableToday && (
+        {!isAvailable && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px] flex items-center justify-center z-20">
             <div className="px-4 py-1.5 rounded-full bg-red-600/90 text-white text-xs font-black uppercase tracking-wider shadow-xl border border-red-400/50">
               Aaj Khatam / Sold Out Today
@@ -164,7 +168,7 @@ export default function MenuCard({ item }) {
           </button>
 
           {/* Add / Quantity Buttons */}
-          {item.isAvailableToday ? (
+          {isAvailable ? (
             quantity === 0 ? (
               <button
                 onClick={handleAdd}

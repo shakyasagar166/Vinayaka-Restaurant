@@ -79,8 +79,10 @@ export default function CustomerMenu({ onNavigate }) {
 
   // Filter items
   const filteredItems = menuItems.filter(item => {
-    // If hideOutOfStock is active, hide sold out dishes
-    if (hideOutOfStock && item.isAvailableToday === false) {
+    const isAvail = (item.isAvailableToday !== undefined)
+      ? Boolean(item.isAvailableToday)
+      : (item.availableToday !== undefined ? Boolean(item.availableToday) : true);
+    if (hideOutOfStock && !isAvail) {
       return false;
     }
 
