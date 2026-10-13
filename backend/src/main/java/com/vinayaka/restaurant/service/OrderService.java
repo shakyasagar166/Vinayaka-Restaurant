@@ -49,19 +49,25 @@ public class OrderService {
         BigDecimal grandTotal = BigDecimal.ZERO;
 
         for (OrderItemRequest itemReq : request.getItems()) {
-            MenuItem menuItem = menuItemRepository.findById(itemReq.getMenuItemId())
-                    .orElseThrow(() -> new RuntimeException("Menu item not found: " + itemReq.getMenuItemId()));
-
-            if (!menuItem.isAvailableToday()) {
-                throw new RuntimeException("Sorry, '" + menuItem.getName() + "' is out of stock today.");
+            MenuItem menuItem = null;
+            if (itemReq.getMenuItemId() != null) {
+                menuItem = menuItemRepository.findById(itemReq.getMenuItemId()).orElse(null);
             }
+            if (menuItem == null && itemReq.getItemName() != null && !itemReq.getItemName().trim().isEmpty()) {
+                menuItem = menuItemRepository.findFirstByNameIgnoreCase(itemReq.getItemName().trim()).orElse(null);
+            }
+
+            Long finalItemId = (menuItem != null) ? menuItem.getId() : (itemReq.getMenuItemId() != null ? itemReq.getMenuItemId() : 0L);
+            String finalName = (menuItem != null) ? menuItem.getName() : (itemReq.getItemName() != null && !itemReq.getItemName().trim().isEmpty() ? itemReq.getItemName() : "Dining Dish");
+            BigDecimal finalPrice = (menuItem != null) ? menuItem.getPrice() : (itemReq.getPrice() != null ? itemReq.getPrice() : new BigDecimal("250.00"));
+            int qty = Math.max(1, itemReq.getQuantity());
 
             OrderItem orderItem = new OrderItem(
                     order,
-                    menuItem.getId(),
-                    menuItem.getName(),
-                    menuItem.getPrice(),
-                    itemReq.getQuantity(),
+                    finalItemId,
+                    finalName,
+                    finalPrice,
+                    qty,
                     itemReq.getNotes()
             );
 

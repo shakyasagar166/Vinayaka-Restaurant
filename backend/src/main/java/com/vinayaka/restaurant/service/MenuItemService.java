@@ -50,8 +50,7 @@ public class MenuItemService {
     }
 
     public void deleteMenuItem(Long id) {
-        MenuItem item = getMenuItemById(id);
-        menuItemRepository.delete(item);
+        menuItemRepository.findById(id).ifPresent(item -> menuItemRepository.delete(item));
     }
 
     private void mapRequestToEntity(MenuItemRequest request, MenuItem item) {

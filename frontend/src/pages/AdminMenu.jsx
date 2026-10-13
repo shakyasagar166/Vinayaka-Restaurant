@@ -25,6 +25,8 @@ export default function AdminMenu() {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState(null);
   const [photoTab, setPhotoTab] = useState('upload'); // 'upload' | 'preset' | 'url'
   const fileInputRef = useRef(null);
 
@@ -152,24 +154,42 @@ export default function AdminMenu() {
   };
 
   const handleDelete = async (id, name) => {
+    if (isDeletingId) return;
     if (window.confirm(`Kya aap "${name}" ko menu se delete karna chahte hain?`)) {
       try {
+        setIsDeletingId(id);
         await api.deleteMenuItem(id);
         setMenuItems(prev => prev.filter(it => String(it.id) !== String(id)));
+        await loadAllMenu();
       } catch (e) {
         alert("Failed to delete dish: " + e.message);
+      } finally {
+        setIsDeletingId(null);
       }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!formData.name || !formData.name.trim()) {
+      alert("Kripya dish ka naam darj karein.");
+      return;
+    }
+    if (!formData.price || isNaN(formData.price)) {
+      alert("Kripya dish ka sahi daam (price) darj karein.");
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       const payload = {
         ...formData,
+        name: formData.name.trim(),
         price: parseFloat(formData.price),
-        preparationTimeMinutes: parseInt(formData.preparationTimeMinutes, 10),
-        spicyLevel: parseInt(formData.spicyLevel, 10),
+        preparationTimeMinutes: parseInt(formData.preparationTimeMinutes, 10) || 15,
+        spicyLevel: parseInt(formData.spicyLevel, 10) || 1,
         isAvailableToday: Boolean(formData.isAvailableToday)
       };
 
@@ -180,9 +200,11 @@ export default function AdminMenu() {
       }
 
       setIsModalOpen(false);
-      loadAllMenu();
+      await loadAllMenu();
     } catch (e) {
       alert("Save failed: " + e.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -740,9 +762,10 @@ export default function AdminMenu() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-extrabold shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-extrabold shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {editingItem ? 'Save Changes' : 'Create & Publish Dish'}
+                  {isSubmitting ? 'Saving Dish...' : (editingItem ? 'Save Changes' : 'Create & Publish Dish')}
                 </button>
               </div>
 

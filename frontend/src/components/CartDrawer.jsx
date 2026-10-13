@@ -57,6 +57,8 @@ export default function CartDrawer({ onOrderSuccess }) {
         specialInstructions: specialInstructions.trim(),
         items: cartItems.map(ci => ({
           menuItemId: ci.menuItem.id,
+          itemName: ci.menuItem.name,
+          price: ci.menuItem.price,
           quantity: ci.quantity,
           notes: ci.notes || ''
         }))

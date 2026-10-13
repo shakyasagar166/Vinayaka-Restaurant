@@ -81,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedMenuItems() {
-        if (menuItemRepository.count() == 0) {
+        if (menuItemRepository.count() < 5) {
             List<MenuItem> items = Arrays.asList(
                     // Rooftop Starters
                     new MenuItem(

@@ -20,4 +20,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     List<String> findDistinctCategories();
 
     List<MenuItem> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
+
+    java.util.Optional<MenuItem> findFirstByNameIgnoreCase(String name);
 }

@@ -295,49 +295,38 @@ function saveLocalOrders(orders) {
 export const api = {
   // Public Menu Endpoints (Customers) - returns all items with their current isAvailableToday status
   async getAvailableMenu() {
-    let localItems = getLocalMenuItems();
-
     try {
       const res = await fetch(`${API_BASE_URL}/menu/all`);
       if (res.ok) {
         const serverItems = await res.json();
         if (Array.isArray(serverItems) && serverItems.length > 0) {
-          // Merge server items with local items
-          const serverIds = new Set(serverItems.map(s => String(s.id)));
-          const onlyLocal = localItems.filter(l => !serverIds.has(String(l.id)));
-          const merged = [...serverItems, ...onlyLocal];
-          localStorage.setItem('mock_menu', JSON.stringify(merged));
-          return merged;
+          localStorage.setItem('mock_menu', JSON.stringify(serverItems));
+          return serverItems;
         }
       }
     } catch (e) {
-      // Backend not running, use localItems
+      // Backend not running, fall back to local
     }
 
-    return localItems;
+    return getLocalMenuItems();
   },
 
   // Staff / Admin: Get All Menu Items (Includes out of stock)
   async getAllMenu() {
-    let localItems = getLocalMenuItems();
-
     try {
       const res = await fetch(`${API_BASE_URL}/menu/all`, { headers: getAuthHeaders() });
       if (res.ok) {
         const serverItems = await res.json();
         if (Array.isArray(serverItems) && serverItems.length > 0) {
-          const serverIds = new Set(serverItems.map(s => String(s.id)));
-          const onlyLocal = localItems.filter(l => !serverIds.has(String(l.id)));
-          const merged = [...serverItems, ...onlyLocal];
-          localStorage.setItem('mock_menu', JSON.stringify(merged));
-          return merged;
+          localStorage.setItem('mock_menu', JSON.stringify(serverItems));
+          return serverItems;
         }
       }
     } catch (e) {
       // Offline fallback
     }
 
-    return localItems;
+    return getLocalMenuItems();
   },
 
   // Toggle Item Availability ("Aaj kya kya hai" - In Stock / Sold Out)
@@ -373,8 +362,29 @@ export const api = {
     return items.find(it => String(it.id) === String(id));
   },
 
-  // Create Menu Item (with photo support)
+  // Create Menu Item (with photo support) - Single Submission to prevent duplicate entries
   async createMenuItem(data) {
+    // 1. First attempt to save directly on server
+    try {
+      const res = await fetch(`${API_BASE_URL}/menu`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        const serverCreated = await res.json();
+        let items = getLocalMenuItems().filter(it => String(it.id) !== String(serverCreated.id));
+        items.unshift(serverCreated);
+        saveLocalMenuItems(items);
+        broadcastEvent('MENU_UPDATED', items);
+        window.dispatchEvent(new CustomEvent('vinayaka_menu_updated'));
+        return serverCreated;
+      }
+    } catch (e) {
+      console.warn("Server unavailable for createMenuItem, saving locally:", e);
+    }
+
+    // 2. Offline fallback ONLY if server is unreachable
     const newItem = {
       ...data,
       id: Date.now(),
@@ -386,32 +396,11 @@ export const api = {
       preparationTimeMinutes: Number(data.preparationTimeMinutes) || 15
     };
 
-    // 1. Save locally first
     let items = getLocalMenuItems();
     items.unshift(newItem);
     saveLocalMenuItems(items);
-
-    // 2. Broadcast to all open customer and admin tabs
     broadcastEvent('MENU_UPDATED', items);
     window.dispatchEvent(new CustomEvent('vinayaka_menu_updated'));
-
-    // 3. Sync to backend database
-    try {
-      const res = await fetch(`${API_BASE_URL}/menu`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        const serverCreated = await res.json();
-        // Replace temp id with server id if needed
-        items = getLocalMenuItems().map(it => it.id === newItem.id ? serverCreated : it);
-        saveLocalMenuItems(items);
-        return serverCreated;
-      }
-    } catch (e) {
-      // offline
-    }
 
     return newItem;
   },
@@ -441,6 +430,7 @@ export const api = {
 
   // Delete Menu Item
   async deleteMenuItem(id) {
+    // Remove from local cache immediately
     let items = getLocalMenuItems();
     items = items.filter(it => String(it.id) !== String(id));
     saveLocalMenuItems(items);
@@ -453,9 +443,11 @@ export const api = {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        return await res.json().catch(() => ({ success: true }));
+      }
     } catch (e) {
-      // offline
+      console.warn("Delete request offline fallback:", e);
     }
 
     return { success: true };
@@ -492,22 +484,64 @@ export const api = {
     const dateStr = now.toISOString().slice(2, 10).replace(/-/g, '');
     const orderNumber = "VR-" + dateStr + "-" + uniqueSuffix;
 
-    // Calculate items & totals
+    // Calculate items & totals with item name and price included
     const preparedItems = orderData.items.map((it, idx) => {
-      const itemInfo = currentMenu.find(m => String(m.id) === String(it.menuItemId)) || { name: "Dish", price: 250 };
+      const itemInfo = currentMenu.find(m => String(m.id) === String(it.menuItemId)) || {};
+      const name = it.itemName || itemInfo.name || "Dining Dish";
+      const price = Number(it.price || itemInfo.price || 250);
       return {
         id: idx + 1,
         menuItemId: it.menuItemId,
-        menuItemName: itemInfo.name,
-        price: itemInfo.price,
-        quantity: it.quantity,
-        subtotal: itemInfo.price * it.quantity,
+        itemName: name,
+        menuItemName: name,
+        price: price,
+        quantity: Number(it.quantity) || 1,
+        subtotal: price * (Number(it.quantity) || 1),
         notes: it.notes || ''
       };
     });
 
     const totalAmount = preparedItems.reduce((sum, x) => sum + x.subtotal, 0);
 
+    const payloadForServer = {
+      tableNumber: orderData.tableNumber,
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone || '',
+      specialInstructions: orderData.specialInstructions || '',
+      items: preparedItems.map(p => ({
+        menuItemId: p.menuItemId,
+        itemName: p.itemName,
+        price: p.price,
+        quantity: p.quantity,
+        notes: p.notes
+      }))
+    };
+
+    // 1. Post to backend Spring Boot server
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadForServer)
+      });
+      if (res.ok) {
+        const serverOrder = await res.json();
+        let updatedOrders = getLocalOrders().filter(o => o.orderNumber !== serverOrder.orderNumber && o.id !== serverOrder.id);
+        updatedOrders.unshift(serverOrder);
+        saveLocalOrders(updatedOrders);
+        broadcastEvent('NEW_ORDER', serverOrder);
+        window.dispatchEvent(new CustomEvent('vinayaka_order_placed', { detail: serverOrder }));
+        window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
+        return serverOrder;
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        console.error("Server rejected order:", res.status, errJson);
+      }
+    } catch (e) {
+      console.warn("Backend not reached for place order, local order saved:", e);
+    }
+
+    // 2. Offline Fallback order
     const newOrder = {
       id: Date.now(),
       orderNumber: orderNumber,
@@ -522,34 +556,13 @@ export const api = {
       updatedAt: now.toISOString()
     };
 
-    // 1. ALWAYS save in unified local storage immediately
     const existingOrders = getLocalOrders();
     existingOrders.unshift(newOrder);
     saveLocalOrders(existingOrders);
 
-    // 2. Broadcast to ALL tabs (including Admin profile in other tabs or current tab)
     broadcastEvent('NEW_ORDER', newOrder);
     window.dispatchEvent(new CustomEvent('vinayaka_order_placed', { detail: newOrder }));
     window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
-
-    // 3. Post to backend Spring Boot server
-    try {
-      const res = await fetch(`${API_BASE_URL}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      });
-      if (res.ok) {
-        const serverOrder = await res.json();
-        // Update order in local storage with server ID
-        let updatedOrders = getLocalOrders();
-        updatedOrders = updatedOrders.map(o => o.orderNumber === newOrder.orderNumber ? { ...serverOrder, ...o, id: serverOrder.id } : o);
-        saveLocalOrders(updatedOrders);
-        return serverOrder;
-      }
-    } catch (e) {
-      console.warn("Backend not reached for place order, local order saved:", e);
-    }
 
     return newOrder;
   },
@@ -584,13 +597,8 @@ export const api = {
       if (res.ok) {
         const serverOrders = await res.json();
         if (Array.isArray(serverOrders)) {
-          // Merge server orders with local orders by orderNumber
-          const serverOrderNums = new Set(serverOrders.map(so => so.orderNumber));
-          const onlyLocal = orders.filter(lo => !serverOrderNums.has(lo.orderNumber));
-          const merged = [...serverOrders, ...onlyLocal];
-          // Save merged
-          localStorage.setItem('mock_orders', JSON.stringify(merged));
-          orders = merged;
+          localStorage.setItem('mock_orders', JSON.stringify(serverOrders));
+          orders = serverOrders;
         }
       }
     } catch (e) {

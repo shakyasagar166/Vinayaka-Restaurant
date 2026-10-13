@@ -5,18 +5,23 @@ import jakarta.validation.constraints.NotNull;
 
 public class OrderItemRequest {
 
-    @NotNull(message = "Menu item ID is required")
     private Long menuItemId;
 
+    private String itemName;
+
+    private java.math.BigDecimal price;
+
     @Min(value = 1, message = "Quantity must be at least 1")
-    private int quantity;
+    private int quantity = 1;
 
     private String notes;
 
     public OrderItemRequest() {}
 
-    public OrderItemRequest(Long menuItemId, int quantity, String notes) {
+    public OrderItemRequest(Long menuItemId, String itemName, java.math.BigDecimal price, int quantity, String notes) {
         this.menuItemId = menuItemId;
+        this.itemName = itemName;
+        this.price = price;
         this.quantity = quantity;
         this.notes = notes;
     }
@@ -27,6 +32,22 @@ public class OrderItemRequest {
 
     public void setMenuItemId(Long menuItemId) {
         this.menuItemId = menuItemId;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public java.math.BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(java.math.BigDecimal price) {
+        this.price = price;
     }
 
     public int getQuantity() {
