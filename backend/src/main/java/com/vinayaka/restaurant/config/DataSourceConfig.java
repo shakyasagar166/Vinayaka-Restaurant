@@ -31,46 +31,86 @@ public class DataSourceConfig {
             envDatabaseUrl = System.getenv("SPRING_DATASOURCE_URL");
         }
 
-        if (envDatabaseUrl != null && (envDatabaseUrl.startsWith("postgres://") || envDatabaseUrl.startsWith("postgresql://"))) {
-            try {
-                // Parse Neon format: postgresql://username:password@hostname:port/database?sslmode=require
-                URI uri = new URI(envDatabaseUrl.replace("postgresql://", "http://").replace("postgres://", "http://"));
+        if (envDatabaseUrl != null && !envDatabaseUrl.trim().isEmpty()) {
+            envDatabaseUrl = envDatabaseUrl.trim();
+            // 1. PostgreSQL (Aiven PostgreSQL / Neon / Supabase)
+            if (envDatabaseUrl.startsWith("postgres://") || envDatabaseUrl.startsWith("postgresql://")) {
+                try {
+                    URI uri = new URI(envDatabaseUrl.replace("postgresql://", "http://").replace("postgres://", "http://"));
 
-                String userInfo = uri.getUserInfo();
-                String username = configuredUsername;
-                String password = configuredPassword;
+                    String userInfo = uri.getUserInfo();
+                    String username = configuredUsername;
+                    String password = configuredPassword;
 
-                if (userInfo != null && userInfo.contains(":")) {
-                    String[] parts = userInfo.split(":", 2);
-                    username = parts[0];
-                    password = parts[1];
+                    if (userInfo != null && userInfo.contains(":")) {
+                        String[] parts = userInfo.split(":", 2);
+                        username = parts[0];
+                        password = parts[1];
+                    }
+
+                    int port = uri.getPort() > 0 ? uri.getPort() : 5432;
+                    String path = uri.getPath();
+                    if (path != null && path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+
+                    String query = uri.getQuery();
+                    String queryParam = (query != null && !query.isEmpty()) ? "?" + query : "?sslmode=require";
+                    if (!queryParam.contains("sslmode")) {
+                        queryParam += (queryParam.contains("?") ? "&" : "?") + "sslmode=require";
+                    }
+
+                    String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + "/" + path + queryParam;
+
+                    System.out.println("🚀 [PostgreSQL Cloud] Connecting to Database at: " + uri.getHost() + ":" + port);
+
+                    return DataSourceBuilder.create()
+                            .driverClassName("org.postgresql.Driver")
+                            .url(jdbcUrl)
+                            .username(username)
+                            .password(password)
+                            .build();
+
+                } catch (Exception e) {
+                    System.err.println("⚠️ Could not parse DATABASE_URL as PostgreSQL URI: " + e.getMessage());
                 }
+            }
 
-                int port = uri.getPort() > 0 ? uri.getPort() : 5432;
-                String path = uri.getPath();
-                if (path != null && path.startsWith("/")) {
-                    path = path.substring(1);
+            // 2. MySQL (Aiven MySQL / CleverCloud / PlanetScale)
+            if (envDatabaseUrl.startsWith("mysql://")) {
+                try {
+                    URI uri = new URI(envDatabaseUrl.replace("mysql://", "http://"));
+
+                    String userInfo = uri.getUserInfo();
+                    String username = configuredUsername;
+                    String password = configuredPassword;
+
+                    if (userInfo != null && userInfo.contains(":")) {
+                        String[] parts = userInfo.split(":", 2);
+                        username = parts[0];
+                        password = parts[1];
+                    }
+
+                    int port = uri.getPort() > 0 ? uri.getPort() : 3306;
+                    String path = uri.getPath();
+                    if (path != null && path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+
+                    String jdbcUrl = "jdbc:mysql://" + uri.getHost() + ":" + port + "/" + path + "?useSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+
+                    System.out.println("🚀 [Aiven MySQL] Connecting to MySQL Database at: " + uri.getHost() + ":" + port);
+
+                    return DataSourceBuilder.create()
+                            .driverClassName("com.mysql.cj.jdbc.Driver")
+                            .url(jdbcUrl)
+                            .username(username)
+                            .password(password)
+                            .build();
+
+                } catch (Exception e) {
+                    System.err.println("⚠️ Could not parse DATABASE_URL as MySQL URI: " + e.getMessage());
                 }
-
-                String query = uri.getQuery();
-                String queryParam = (query != null && !query.isEmpty()) ? "?" + query : "?sslmode=require";
-                if (!queryParam.contains("sslmode")) {
-                    queryParam += (queryParam.contains("?") ? "&" : "?") + "sslmode=require";
-                }
-
-                String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + "/" + path + queryParam;
-
-                System.out.println("🚀 [Neon PostgreSQL] Connecting to Neon Database at: " + uri.getHost());
-
-                return DataSourceBuilder.create()
-                        .driverClassName("org.postgresql.Driver")
-                        .url(jdbcUrl)
-                        .username(username)
-                        .password(password)
-                        .build();
-
-            } catch (Exception e) {
-                System.err.println("⚠️ Could not parse DATABASE_URL as Neon URI: " + e.getMessage());
             }
         }
 
