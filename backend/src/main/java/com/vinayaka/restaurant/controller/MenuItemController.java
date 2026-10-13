@@ -76,13 +76,23 @@ public class MenuItemController {
         }
     }
 
-    // Staff/Admin: Toggle "Aaj kya kya hai" (Today's Availability)
-    @PatchMapping("/{id}/availability")
+    // Staff/Admin: Toggle "Aaj kya kya hai" (Today's Availability - In Stock / Sold Out)
+    @RequestMapping(value = "/{id}/availability", method = {RequestMethod.PATCH, RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity<?> toggleAvailability(
             @PathVariable Long id,
-            @RequestBody AvailabilityToggleRequest request) {
+            @RequestBody(required = false) Map<String, Object> body) {
         try {
-            MenuItem updated = menuItemService.toggleAvailability(id, request.isAvailableToday());
+            boolean available = true;
+            if (body != null) {
+                if (body.containsKey("isAvailableToday")) {
+                    available = Boolean.parseBoolean(String.valueOf(body.get("isAvailableToday")));
+                } else if (body.containsKey("availableToday")) {
+                    available = Boolean.parseBoolean(String.valueOf(body.get("availableToday")));
+                } else if (body.containsKey("inStock")) {
+                    available = Boolean.parseBoolean(String.valueOf(body.get("inStock")));
+                }
+            }
+            MenuItem updated = menuItemService.toggleAvailability(id, available);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             Map<String, String> err = new HashMap<>();

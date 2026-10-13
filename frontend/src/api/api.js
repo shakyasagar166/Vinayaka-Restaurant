@@ -157,25 +157,32 @@ export const api = {
 
     // 1. Update local storage IMMEDIATELY for 0ms latency
     let items = getLocalMenuItems();
-    items = items.map(it => String(it.id) === String(id) ? { ...it, isAvailableToday: boolVal } : it);
+    items = items.map(it => String(it.id) === String(id) ? { ...it, isAvailableToday: boolVal, availableToday: boolVal } : it);
     saveLocalMenuItems(items);
 
     // 2. Broadcast to all other tabs & windows
-    broadcastEvent('MENU_ITEM_TOGGLED', { id, isAvailableToday: boolVal });
+    broadcastEvent('MENU_ITEM_TOGGLED', { id, isAvailableToday: boolVal, availableToday: boolVal });
     window.dispatchEvent(new CustomEvent('vinayaka_menu_updated'));
 
     // 3. Sync to backend database
     try {
       const res = await fetch(`${API_BASE_URL}/menu/${id}/availability`, {
-        method: 'PATCH',
-        headers: getAuthHeaders(),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify({
           isAvailableToday: boolVal,
           availableToday: boolVal
         })
       });
       if (res.ok) {
-        return await res.json();
+        const updated = await res.json();
+        const norm = normalizeItem(updated);
+        items = getLocalMenuItems().map(it => String(it.id) === String(id) ? norm : it);
+        saveLocalMenuItems(items);
+        return norm;
       }
     } catch (e) {
       // offline
