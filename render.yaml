@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: vinayaka-restaurant-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: oregon
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        value: VinayakaRestaurantRooftopLoungeSuperSecretKey2026SecureJwt384BitsLong
