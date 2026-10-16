@@ -1,32 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle, Trash2 } from 'lucide-react';
+import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle, Trash2, Volume2, VolumeX } from 'lucide-react';
 import { api } from '../api/api';
-
-// Browser synthesizer chime for new incoming kitchen orders
-function playOrderChime() {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-    osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.15); // A5
-
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.6);
-  } catch (e) {
-    // Audio context may be restricted by autoplay policy
-  }
-}
+import { playKitchenBell, testKitchenBell, isBellMuted, setBellMuted, checkAndNotifyNewOrders, requestNotificationPermission } from '../utils/soundAlert';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -35,16 +10,41 @@ export default function AdminOrders() {
   const [tablesList, setTablesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newOrderAlert, setNewOrderAlert] = useState(null);
+  const [bellMuted, setBellMutedState] = useState(isBellMuted());
+  const [testStatus, setTestStatus] = useState('');
 
   const fetchOrders = async () => {
     try {
       const data = await api.getAllOrders(activeStatus, selectedTable);
       setOrders(data || []);
+
+      // Check for new incoming orders across all phones/devices during polling
+      const { hasNew, newOrders } = checkAndNotifyNewOrders(data || []);
+      if (hasNew && newOrders.length > 0) {
+        setNewOrderAlert(newOrders[0]);
+        setTimeout(() => setNewOrderAlert(null), 12000);
+      }
     } catch (e) {
       console.error("Error fetching orders:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTestBell = async () => {
+    setTestStatus('ringing');
+    requestNotificationPermission();
+    const played = await testKitchenBell();
+    setTimeout(() => {
+      setTestStatus(played ? 'success' : 'muted');
+      setTimeout(() => setTestStatus(''), 3000);
+    }, 1200);
+  };
+
+  const handleToggleMute = () => {
+    const next = !bellMuted;
+    setBellMuted(next);
+    setBellMutedState(next);
   };
 
   useEffect(() => {
@@ -54,47 +54,70 @@ export default function AdminOrders() {
   useEffect(() => {
     fetchOrders();
 
-    // 1. Cross-tab BroadcastChannel listener
+    // 1. Cross-tab BroadcastChannel listener (both channels)
     let channel = null;
+    let legacyChannel = null;
     try {
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-        channel = new BroadcastChannel('vinayaka_restaurant_channel');
-        channel.onmessage = (event) => {
+        channel = new BroadcastChannel('garam_masala_restaurant_channel');
+        legacyChannel = new BroadcastChannel('vinayaka_restaurant_channel');
+        const handleMsg = (event) => {
           if (event.data?.type === 'NEW_ORDER') {
-            playOrderChime();
+            playKitchenBell();
             setNewOrderAlert(event.data.payload);
             fetchOrders();
-            setTimeout(() => setNewOrderAlert(null), 8000);
+            setTimeout(() => setNewOrderAlert(null), 12000);
           } else if (event.data?.type === 'ORDERS_UPDATED') {
             fetchOrders();
           }
         };
+        channel.onmessage = handleMsg;
+        legacyChannel.onmessage = handleMsg;
       }
     } catch (e) {}
 
     // 2. Same-window custom event listeners
     const handleOrderPlaced = (e) => {
-      playOrderChime();
+      playKitchenBell();
       setNewOrderAlert(e.detail);
       fetchOrders();
-      setTimeout(() => setNewOrderAlert(null), 8000);
+      setTimeout(() => setNewOrderAlert(null), 12000);
+    };
+
+    const handleNewOrderAlert = (e) => {
+      setNewOrderAlert(e.detail);
+      fetchOrders();
+      setTimeout(() => setNewOrderAlert(null), 12000);
     };
 
     const handleOrdersUpdated = () => {
       fetchOrders();
     };
 
+    const handleMuteChanged = (e) => {
+      setBellMutedState(e.detail?.muted);
+    };
+
+    window.addEventListener('garam_masala_order_placed', handleOrderPlaced);
     window.addEventListener('vinayaka_order_placed', handleOrderPlaced);
+    window.addEventListener('gm_new_order_received', handleNewOrderAlert);
+    window.addEventListener('garam_masala_orders_updated', handleOrdersUpdated);
     window.addEventListener('vinayaka_orders_updated', handleOrdersUpdated);
+    window.addEventListener('gm_bell_mute_changed', handleMuteChanged);
     window.addEventListener('storage', handleOrdersUpdated);
 
-    // 3. Fast 2-second polling interval for bulletproof live sync
+    // 3. Fast 2-second polling interval for bulletproof live sync across devices
     const timer = setInterval(fetchOrders, 2000);
 
     return () => {
       if (channel) channel.close();
+      if (legacyChannel) legacyChannel.close();
+      window.removeEventListener('garam_masala_order_placed', handleOrderPlaced);
       window.removeEventListener('vinayaka_order_placed', handleOrderPlaced);
+      window.removeEventListener('gm_new_order_received', handleNewOrderAlert);
+      window.removeEventListener('garam_masala_orders_updated', handleOrdersUpdated);
       window.removeEventListener('vinayaka_orders_updated', handleOrdersUpdated);
+      window.removeEventListener('gm_bell_mute_changed', handleMuteChanged);
       window.removeEventListener('storage', handleOrdersUpdated);
       clearInterval(timer);
     };
@@ -269,6 +292,54 @@ export default function AdminOrders() {
               </option>
             ))}
           </select>
+
+          {/* Kitchen Bell Alert Status & One-Click Test Button */}
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-black/70 p-1.5 px-2.5 sm:px-3 rounded-2xl border border-amber-500/40 shadow-inner shrink-0">
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="relative flex h-2.5 w-2.5">
+                {!bellMuted && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                )}
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${bellMuted ? 'bg-red-500' : 'bg-emerald-500'}`}></span>
+              </span>
+              <span className="text-gray-300 font-bold text-[11px] hidden lg:inline">
+                {bellMuted ? 'Bell Muted' : 'Kitchen Bell ON'}
+              </span>
+            </div>
+
+            <button
+              onClick={handleTestBell}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow ${
+                testStatus === 'ringing'
+                  ? 'bg-amber-400 text-black scale-105 animate-bounce'
+                  : testStatus === 'success'
+                  ? 'bg-emerald-500 text-black'
+                  : 'bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black active:scale-95'
+              }`}
+              title="Kitchen dining bell chime bajayein aur browser sound unlock karein"
+            >
+              <Bell className="w-3.5 h-3.5 fill-black" />
+              <span>
+                {testStatus === 'ringing'
+                  ? '🔔 Ringing...'
+                  : testStatus === 'success'
+                  ? '✓ Bell Ringing!'
+                  : 'Test Bell 🛎️'}
+              </span>
+            </button>
+
+            <button
+              onClick={handleToggleMute}
+              className={`p-1.5 rounded-xl border text-xs transition-colors ${
+                bellMuted
+                  ? 'bg-red-950/80 border-red-700 text-red-300 hover:bg-red-900'
+                  : 'bg-gray-800 border-gray-700 text-gray-300 hover:text-white'
+              }`}
+              title={bellMuted ? 'Unmute Bell' : 'Mute Bell'}
+            >
+              {bellMuted ? <VolumeX className="w-3.5 h-3.5 text-red-400" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
+            </button>
+          </div>
 
           <button
             onClick={fetchOrders}

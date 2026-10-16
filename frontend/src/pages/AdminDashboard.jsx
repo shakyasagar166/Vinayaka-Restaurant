@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Utensils, QrCode, LogOut, ExternalLink, IndianRupee, Clock, CheckCircle2, RefreshCw, Sparkles, Store } from 'lucide-react';
+import { ChefHat, Utensils, QrCode, LogOut, ExternalLink, IndianRupee, Clock, CheckCircle2, RefreshCw, Sparkles, Store, Bell, CheckCircle, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AdminOrders from './AdminOrders';
 import AdminMenu from './AdminMenu';
@@ -7,10 +7,13 @@ import AdminTablesQr from './AdminTablesQr';
 import AdminProfile from './AdminProfile';
 import AdminDailySales from './AdminDailySales';
 import { api } from '../api/api';
+import { playKitchenBell, testKitchenBell, checkAndNotifyNewOrders, requestNotificationPermission } from '../utils/soundAlert';
 
 export default function AdminDashboard({ onNavigateToMenu }) {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'menu' | 'tables'
+  const [globalOrderAlert, setGlobalOrderAlert] = useState(null);
+  const [quickTestStatus, setQuickTestStatus] = useState('');
   const [stats, setStats] = useState({
     totalOrdersToday: 0,
     pendingOrders: 0,
@@ -29,26 +32,76 @@ export default function AdminDashboard({ onNavigateToMenu }) {
     }
   };
 
-  useEffect(() => {
-    loadStats();
+  const syncDashboard = async () => {
+    try {
+      // Poll live orders to catch any order placed from customer phones across any tab
+      const allOrders = await api.getAllOrders();
+      if (Array.isArray(allOrders)) {
+        const { hasNew, newOrders } = checkAndNotifyNewOrders(allOrders);
+        if (hasNew && newOrders.length > 0) {
+          setGlobalOrderAlert(newOrders[0]);
+        }
+      }
+      await loadStats();
+    } catch (e) {
+      console.warn("Dashboard sync error:", e);
+    }
+  };
 
-    const handleUpdate = () => loadStats();
-    window.addEventListener('vinayaka_order_placed', handleUpdate);
+  const handleQuickTestBell = async () => {
+    setQuickTestStatus('ringing');
+    requestNotificationPermission();
+    const played = await testKitchenBell();
+    setTimeout(() => {
+      setQuickTestStatus(played ? 'success' : '');
+      setTimeout(() => setQuickTestStatus(''), 2500);
+    }, 1000);
+  };
+
+  useEffect(() => {
+    syncDashboard();
+
+    const handleIncomingOrder = (e) => {
+      playKitchenBell();
+      setGlobalOrderAlert(e.detail);
+      syncDashboard();
+    };
+
+    const handleUpdate = () => syncDashboard();
+    window.addEventListener('garam_masala_order_placed', handleIncomingOrder);
+    window.addEventListener('vinayaka_order_placed', handleIncomingOrder);
+    window.addEventListener('gm_new_order_received', (e) => setGlobalOrderAlert(e.detail));
+    window.addEventListener('garam_masala_orders_updated', handleUpdate);
     window.addEventListener('vinayaka_orders_updated', handleUpdate);
     window.addEventListener('storage', handleUpdate);
 
     let channel = null;
+    let legacyChannel = null;
     try {
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-        channel = new BroadcastChannel('vinayaka_restaurant_channel');
-        channel.onmessage = () => loadStats();
+        channel = new BroadcastChannel('garam_masala_restaurant_channel');
+        legacyChannel = new BroadcastChannel('vinayaka_restaurant_channel');
+        const handleMsg = (event) => {
+          if (event.data?.type === 'NEW_ORDER') {
+            playKitchenBell();
+            setGlobalOrderAlert(event.data.payload);
+            syncDashboard();
+          } else {
+            syncDashboard();
+          }
+        };
+        channel.onmessage = handleMsg;
+        legacyChannel.onmessage = handleMsg;
       }
     } catch (e) {}
 
-    const interval = setInterval(loadStats, 2000);
+    const interval = setInterval(syncDashboard, 2000);
     return () => {
       if (channel) channel.close();
-      window.removeEventListener('vinayaka_order_placed', handleUpdate);
+      if (legacyChannel) legacyChannel.close();
+      window.removeEventListener('garam_masala_order_placed', handleIncomingOrder);
+      window.removeEventListener('vinayaka_order_placed', handleIncomingOrder);
+      window.removeEventListener('garam_masala_orders_updated', handleUpdate);
       window.removeEventListener('vinayaka_orders_updated', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
       clearInterval(interval);
@@ -79,7 +132,29 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Kitchen Bell Quick Test Button */}
+          <button
+            onClick={handleQuickTestBell}
+            className={`px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow ${
+              quickTestStatus === 'ringing'
+                ? 'bg-amber-400 text-black scale-105 animate-bounce'
+                : quickTestStatus === 'success'
+                ? 'bg-emerald-500 text-black'
+                : 'bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black active:scale-95'
+            }`}
+            title="Kitchen Sound Bell Test Karein (Ding-Dong Chime)"
+          >
+            <Bell className="w-3.5 h-3.5 fill-black" />
+            <span>
+              {quickTestStatus === 'ringing'
+                ? '🔔 Ringing...'
+                : quickTestStatus === 'success'
+                ? '✓ Bell Ringing!'
+                : 'Test Bell 🛎️'}
+            </span>
+          </button>
+
           <button
             onClick={onNavigateToMenu}
             className="px-3.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -97,6 +172,49 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           </button>
         </div>
       </div>
+
+      {/* Global Incoming Order Alert Banner (Visible across ALL tabs) */}
+      {globalOrderAlert && activeTab !== 'orders' && (
+        <div className="no-print p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-bold flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xl animate-bounce-subtle border-2 border-yellow-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-11 h-11 rounded-2xl bg-black text-amber-300 flex items-center justify-center animate-spin shrink-0" style={{ animationDuration: '3s' }}>
+              <Bell className="w-5 h-5 fill-amber-300 text-amber-300" />
+            </div>
+            <div>
+              <div className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
+                <span>🔔 Naya Order Aaya: Table {globalOrderAlert.tableNumber}</span>
+                <span className="text-[10px] bg-black text-amber-300 px-2 py-0.5 rounded-full font-bold">
+                  Verification Needed
+                </span>
+              </div>
+              <div className="text-xs font-medium text-black/90 mt-0.5">
+                Customer: <strong>{globalOrderAlert.customerName || 'Guest'}</strong> &bull; Bill: <strong>₹{globalOrderAlert.totalAmount}</strong> &bull; Order #{globalOrderAlert.orderNumber}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => {
+                setActiveTab('orders');
+                setGlobalOrderAlert(null);
+              }}
+              className="px-4 py-2 rounded-xl bg-black text-amber-300 hover:text-white text-xs font-black flex items-center gap-1.5 shadow transition-transform active:scale-95"
+            >
+              <ChefHat className="w-4 h-4 text-amber-400" />
+              <span>Orders Tab Me Dekhein ➔</span>
+            </button>
+
+            <button
+              onClick={() => setGlobalOrderAlert(null)}
+              className="p-2 rounded-xl bg-black/30 hover:bg-black/50 text-black text-xs font-bold"
+              title="Close Banner"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Real-time Business Stats KPI Cards */}
       <div className="no-print grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
