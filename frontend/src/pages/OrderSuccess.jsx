@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Clock, ChefHat, UtensilsCrossed, CheckCheck, MapPin, Plus, RefreshCw, AlertCircle, ShieldAlert } from 'lucide-react';
 import { api } from '../api/api';
+import { formatOrderTime } from '../utils/timeUtils';
 
 export default function OrderSuccess({ initialOrder, onOrderMore }) {
   const [order, setOrder] = useState(initialOrder);
@@ -142,6 +143,12 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
           <span className="px-3 py-1 rounded-full bg-gray-800/80 border border-gray-700 text-gray-300">
             Guest: {order.customerName}
           </span>
+          {order.createdAt && (
+            <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Time: {formatOrderTime(order.createdAt).timeStr}</span>
+            </span>
+          )}
         </div>
       </div>
 

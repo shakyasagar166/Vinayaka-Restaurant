@@ -470,24 +470,39 @@ export const api = {
     return orders.find(o => String(o.id) === String(orderId));
   },
 
-  // Staff: Delete Order Permanently
-  async deleteOrder(orderId) {
+  // Staff: Delete Order Permanently (Supports ID or Order Number)
+  async deleteOrder(orderId, orderNumber = null) {
     let orders = getLocalOrders();
-    orders = orders.filter(o => String(o.id) !== String(orderId));
+    const targetIdStr = orderId != null ? String(orderId).trim() : '';
+    const targetNumStr = orderNumber != null ? String(orderNumber).trim() : '';
+
+    orders = orders.filter(o => {
+      const oIdStr = o.id != null ? String(o.id).trim() : '';
+      const oNumStr = o.orderNumber != null ? String(o.orderNumber).trim() : '';
+
+      const match1 = targetIdStr && (oIdStr === targetIdStr || oNumStr === targetIdStr);
+      const match2 = targetNumStr && (oNumStr === targetNumStr || oIdStr === targetNumStr);
+      return !(match1 || match2);
+    });
     saveLocalOrders(orders);
 
     broadcastEvent('ORDERS_UPDATED', orders);
     window.dispatchEvent(new CustomEvent('garam_masala_orders_updated'));
     window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
-      });
-      if (res.ok) return await res.json();
-    } catch (e) {
-      // offline fallback
+    const identifier = targetNumStr || targetIdStr;
+    if (identifier) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(identifier)}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return await res.json().catch(() => ({ success: true }));
+        }
+      } catch (e) {
+        // offline fallback
+      }
     }
 
     return { success: true };

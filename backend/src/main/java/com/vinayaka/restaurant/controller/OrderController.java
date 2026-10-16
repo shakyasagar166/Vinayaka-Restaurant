@@ -88,11 +88,11 @@ public class OrderController {
         }
     }
 
-    // STAFF / ADMIN: Delete an order permanently (e.g. cancelled order)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+    // STAFF / ADMIN: Delete an order permanently (by numeric ID or orderNumber string)
+    @DeleteMapping("/{identifier}")
+    public ResponseEntity<?> deleteOrder(@PathVariable String identifier) {
         try {
-            orderService.deleteOrder(id);
+            orderService.deleteOrder(identifier);
             Map<String, Object> resp = new HashMap<>();
             resp.put("success", true);
             resp.put("message", "Order permanently deleted");

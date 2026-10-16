@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle, Trash2, Volume2, VolumeX } from 'lucide-react';
 import { api } from '../api/api';
 import { playKitchenBell, testKitchenBell, isBellMuted, setBellMuted, checkAndNotifyNewOrders, requestNotificationPermission } from '../utils/soundAlert';
+import { formatOrderTime } from '../utils/timeUtils';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -132,15 +133,30 @@ export default function AdminOrders() {
     }
   };
 
-  const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm("Kya aap sach me is order ko permanently delete karna chahte hain?")) {
+  const handleDeleteOrder = async (ord) => {
+    if (!ord) return;
+    const orderId = ord.id;
+    const orderNumber = ord.orderNumber;
+    const displayLabel = orderNumber ? `#${orderNumber}` : (ord.tableNumber ? `Table ${ord.tableNumber}` : 'is order');
+
+    if (!window.confirm(`Kya aap sach me Order ${displayLabel} ko permanently delete karna chahte hain?`)) {
       return;
     }
+
+    // 1. Instant Optimistic UI Update: Screen se turant hat jayega
+    setOrders(prev => prev.filter(o => {
+      const matchId = orderId != null && String(o.id) === String(orderId);
+      const matchNum = orderNumber != null && o.orderNumber === orderNumber;
+      return !(matchId || matchNum);
+    }));
+
+    // 2. Local & Server Delete Execution
     try {
-      await api.deleteOrder(orderId);
-      fetchOrders();
+      await api.deleteOrder(orderId, orderNumber);
+      setTimeout(fetchOrders, 400);
     } catch (err) {
-      alert("Delete failed: " + err.message);
+      console.error("Delete order error:", err);
+      fetchOrders();
     }
   };
 
@@ -148,11 +164,16 @@ export default function AdminOrders() {
     if (!window.confirm(`Kya aap sach me sabhi (${cancelledCount}) cancelled orders ko permanently delete karna chahte hain?`)) {
       return;
     }
+
+    // Instant Optimistic UI Update
+    setOrders(prev => prev.filter(o => o.status !== 'CANCELLED'));
+
     try {
       await api.deleteCancelledOrders();
-      fetchOrders();
+      setTimeout(fetchOrders, 400);
     } catch (err) {
-      alert("Delete failed: " + err.message);
+      console.error("Delete cancelled error:", err);
+      fetchOrders();
     }
   };
 
@@ -389,8 +410,15 @@ export default function AdminOrders() {
                       #{ord.orderNumber}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     {getStatusBadge(ord.status)}
+                    <button
+                      onClick={() => handleDeleteOrder(ord)}
+                      className="p-1.5 rounded-xl bg-gray-800/80 hover:bg-red-950/80 border border-gray-700/60 hover:border-red-700/80 text-gray-400 hover:text-red-400 transition-all shadow-sm active:scale-95 shrink-0"
+                      title="Is order ko permanently delete karein"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
 
@@ -407,9 +435,11 @@ export default function AdminOrders() {
                     </div>
                   )}
                   {ord.createdAt && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-                      <Clock className="w-3 h-3 text-gray-500 shrink-0" />
-                      <span>Time: {new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-amber-300 font-bold">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>
+                        Time: <strong className="text-white">{formatOrderTime(ord.createdAt).timeStr}</strong> &bull; <span className="text-gray-400 font-normal">{formatOrderTime(ord.createdAt).relativeStr}</span>
+                      </span>
                     </div>
                   )}
                 </div>
@@ -523,7 +553,7 @@ export default function AdminOrders() {
                         <span>Order Rejected / Cancelled</span>
                       </span>
                       <button
-                        onClick={() => handleDeleteOrder(ord.id)}
+                        onClick={() => handleDeleteOrder(ord)}
                         className="py-1.5 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-1.5 transition-all text-xs font-black shadow active:scale-95 shrink-0"
                         title="Sabhi jagah se permanently delete karein"
                       >

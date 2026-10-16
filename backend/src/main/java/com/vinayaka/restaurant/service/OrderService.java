@@ -108,9 +108,31 @@ public class OrderService {
     }
 
     @Transactional
+    public void deleteOrder(String identifier) {
+        if (identifier == null || identifier.trim().isEmpty()) return;
+        String clean = identifier.trim();
+        Order order = null;
+        try {
+            Long id = Long.parseLong(clean);
+            order = orderRepository.findById(id).orElse(null);
+        } catch (NumberFormatException ignored) {}
+
+        if (order == null) {
+            order = orderRepository.findByOrderNumber(clean).orElse(null);
+        }
+
+        if (order != null) {
+            orderRepository.delete(order);
+        }
+    }
+
+    @Transactional
     public void deleteOrder(Long id) {
-        Order order = getOrderById(id);
-        orderRepository.delete(order);
+        if (id == null) return;
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            orderRepository.delete(order);
+        }
     }
 
     @Transactional

@@ -1,15 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { IndianRupee, Calendar, TrendingUp, ChefHat, CheckCircle2, XCircle, Printer, Filter, Utensils, Clock, MapPin, RefreshCw, Sparkles, ShieldCheck } from 'lucide-react';
 import { api } from '../api/api';
+import { formatOrderTime } from '../utils/timeUtils';
+
+const getLocalDateString = (d) => {
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return '';
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, '0');
+  const day = String(dt.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
 
 export default function AdminDailySales() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState('TODAY'); // 'TODAY' | 'YESTERDAY' | '7DAYS' | '30DAYS' | 'CUSTOM' | 'ALL'
-  const [customDate, setCustomDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [customDate, setCustomDate] = useState(() => getLocalDateString(new Date()));
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -41,11 +48,11 @@ export default function AdminDailySales() {
   // Filter orders according to date selection
   const filteredOrders = useMemo(() => {
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = getLocalDateString(now);
 
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const yesterdayStr = getLocalDateString(yesterday);
 
     const sevenDaysAgo = new Date(now);
     sevenDaysAgo.setDate(now.getDate() - 7);
@@ -56,7 +63,7 @@ export default function AdminDailySales() {
     return orders.filter(ord => {
       if (!ord.createdAt) return true;
       const orderDate = new Date(ord.createdAt);
-      const orderDateStr = orderDate.toISOString().split('T')[0];
+      const orderDateStr = getLocalDateString(ord.createdAt);
 
       switch (dateFilter) {
         case 'TODAY':

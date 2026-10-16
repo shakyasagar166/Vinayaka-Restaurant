@@ -27,6 +27,8 @@ COPY --from=builder /app/target/*.jar app.jar
 
 # Render assigns port dynamically via $PORT environment variable
 ENV PORT=8080
+ENV TZ="Asia/Kolkata"
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Duser.timezone=Asia/Kolkata -Dserver.port=${PORT} -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+
