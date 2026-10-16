@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Garam Masala Restaurant - Smart QR Dine-In Pitch Deck</title>
+  <title>Garam Masala Family Restaurant - Smart Automation Pitch Deck</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #070a12;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0f19;
       color: #f3f4f6;
     }
     .font-cinzel {
@@ -19,614 +17,433 @@
     }
     .slide {
       display: none;
-      min-height: 85vh;
-      animation: fadeIn 0.4s ease-in-out;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
     }
     .slide.active {
       display: flex;
+      opacity: 1;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @media print {
-      .no-print { display: none !important; }
-      .slide { display: flex !important; page-break-after: always; min-height: 100vh; }
+    .glass-card {
+      background: rgba(16, 22, 38, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
   </style>
 </head>
-<body class="selection:bg-amber-500 selection:text-black">
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
 
-  <!-- Top Controller Bar -->
-  <header class="no-print sticky top-0 z-50 bg-[#0d121f]/90 backdrop-blur-md border-b border-amber-500/30 px-4 py-3 flex items-center justify-between">
+  <!-- Top Bar Navigation -->
+  <header class="no-print border-b border-gray-800 bg-[#0d1222]/90 backdrop-blur px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center font-cinzel font-black text-black text-sm shadow">
-        GM
+      <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-lg">
+        🍲
       </div>
       <div>
-        <h1 class="font-cinzel text-sm sm:text-base font-bold text-amber-300">
-          Garam Masala Restaurant
+        <h1 class="font-cinzel text-sm sm:text-base font-bold text-white tracking-wide">
+          Garam Masala Family Restaurant
         </h1>
-        <p class="text-[10px] text-gray-400">Owner Pitch Presentation Deck</p>
+        <p class="text-[10px] text-amber-400 font-semibold tracking-wider uppercase">
+          Smart Dine-In QR Ordering &amp; Profit Booster Deck
+        </p>
       </div>
     </div>
 
-    <!-- Navigation Controls -->
-    <div class="flex items-center space-x-2">
-      <button onclick="prevSlide()" class="px-3 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-bold transition-colors">
-        ◀ Previous
-      </button>
-      <span id="slideIndicator" class="text-xs font-mono font-bold text-amber-400 px-2">
+    <!-- Slide Indicators & Controls -->
+    <div class="flex items-center space-x-2 sm:space-x-4">
+      <span id="slideCounter" class="text-xs font-mono font-bold text-amber-300 bg-black/50 px-3 py-1 rounded-full border border-gray-700">
         Slide 1 / 10
       </span>
-      <button onclick="nextSlide()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-extrabold transition-colors">
-        Next ▶
-      </button>
-      <button onclick="window.print()" class="hidden sm:inline-flex px-3 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-amber-300 text-xs font-bold transition-colors ml-2">
-        🖨️ Print / Save PDF
-      </button>
+      <div class="flex items-center space-x-1.5">
+        <button onclick="prevSlide()" class="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold transition active:scale-95">
+          ◀ Prev
+        </button>
+        <button onclick="nextSlide()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black transition active:scale-95 shadow">
+          Next ▶
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Presentation Stage Container -->
-  <main class="max-w-6xl mx-auto p-4 sm:p-8 flex items-center justify-center">
+  <!-- Slide Display Container -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-8 max-w-6xl mx-auto w-full">
 
-    <!-- SLIDE 1: Title & Hero -->
-    <section class="slide active flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-12 shadow-2xl relative overflow-hidden" data-slide="1">
-      <div class="absolute -top-24 -right-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- SLIDE 1: TITLE SLIDE -->
+    <section class="slide active flex-col items-center justify-center text-center space-y-6 w-full glass-card p-6 sm:p-12 rounded-3xl shadow-2xl">
+      <div class="inline-block px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-black tracking-widest uppercase">
+        ✦ RESTAURANT TRANSFORMATION &amp; PROFIT PITCH ✦
+      </div>
+      <h2 class="font-cinzel text-3xl sm:text-5xl font-black text-white leading-tight">
+        Garam Masala Family Restaurant
+      </h2>
+      <p class="text-amber-200 text-base sm:text-xl font-bold max-w-3xl mx-auto leading-relaxed">
+        Smart Dine-In QR Ordering • Waiter Salary Savings • Kitchen Bell Chime • Daily Sales Report
+      </p>
 
-      <div class="space-y-4 text-center my-auto">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-black tracking-widest uppercase">
-          ✦ SMART RESTAURANT TRANSFORMATION PITCH ✦
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl pt-4">
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-amber-500/30 text-left">
+          <div class="text-2xl mb-1">💰</div>
+          <h4 class="font-bold text-amber-400 text-sm">Waiter Salary Bachat</h4>
+          <p class="text-xs text-gray-300 mt-1">1 Extra waiter ka kharcha kam (Har mahine ₹12,000+ bachat).</p>
         </div>
-
-        <h2 class="font-cinzel text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-wide">
-          Garam Masala Family Restaurant
-        </h2>
-
-        <p class="font-cinzel text-lg sm:text-2xl font-bold text-amber-400 max-w-3xl mx-auto">
-          Next-Gen QR Table Ordering, Kitchen Automation &amp; Daily Sales Control
-        </p>
-
-        <p class="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Kaise aapka restaurant bina kisi Zomato/Swiggy commission ke <strong class="text-white">25% zyada sale</strong> kama sakta hai aur table ordering ko 100% automated bana sakta hai.
-        </p>
-
-        <!-- 3 Pillars on Cover -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-left max-w-4xl mx-auto">
-          <div class="bg-black/50 border border-amber-500/30 p-4 rounded-2xl">
-            <div class="text-amber-400 font-bold text-base mb-1">💰 100% Commission-Free</div>
-            <p class="text-xs text-gray-400">Dine-in orders par Zomato/Swiggy ko ₹0 commission. Saara munafa aapka!</p>
-          </div>
-          <div class="bg-black/50 border border-amber-500/30 p-4 rounded-2xl">
-            <div class="text-amber-400 font-bold text-base mb-1">⚡ 25% Fast Turnover</div>
-            <p class="text-xs text-gray-400">Zero waiter wait time. Peak hours me 2x zyada customers serve karein.</p>
-          </div>
-          <div class="bg-black/50 border border-amber-500/30 p-4 rounded-2xl">
-            <div class="text-amber-400 font-bold text-base mb-1">🛡️ Captain 1-Click Verification</div>
-            <p class="text-xs text-gray-400">Ghar se hone wale fake prank orders se 100% raw material protection.</p>
-          </div>
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-amber-500/30 text-left">
+          <div class="text-2xl mb-1">🛡️</div>
+          <h4 class="font-bold text-amber-400 text-sm">Captain 1-Click Verify</h4>
+          <p class="text-xs text-gray-300 mt-1">Ghar baithe fake/prank orders se 100% bachat, khana barbad zero.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-amber-500/30 text-left">
+          <div class="text-2xl mb-1">⚡</div>
+          <h4 class="font-bold text-amber-400 text-sm">20 Min Fast Table Turnover</h4>
+          <p class="text-xs text-gray-300 mt-1">Rush hour me table jaldi khali, zyada families baithengi, zyada kamai!</p>
         </div>
       </div>
 
-      <div class="border-t border-gray-800 pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400">
-        <span>Prepared for: <strong>Sagar Shakya (Owner)</strong> &bull; Garam Masala Family Restaurant</span>
-        <span class="text-amber-400 font-semibold mt-1 sm:mt-0">Dine-In Digital Solution 2026</span>
-      </div>
+      <p class="text-xs text-gray-400 pt-4 border-t border-gray-800 w-full">
+        Prepared for Restaurant Owner: <strong>Sagar Shakya &amp; Management Team</strong> &bull; Garam Masala Restaurant
+      </p>
     </section>
 
-    <!-- SLIDE 2: Problem vs Solution -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="2">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Comparison</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Purane Paper Menu Ki Musibatein vs Smart QR System
-        </h2>
+    <!-- SLIDE 2: PROBLEMS VS SOLUTIONS -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div>
+          <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Traditional vs Modern Dine-In</span>
+          <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Purane Paper Menu Ki Musibatein vs Smart QR System</h3>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
-        <!-- Old Way -->
-        <div class="bg-red-950/20 border-2 border-red-500/40 rounded-2xl p-5 space-y-3">
-          <h3 class="text-lg font-bold text-red-400 flex items-center gap-2">
-            <span>❌ Purane Paper Menu Ki Dikkat</span>
-          </h3>
-          <ul class="text-xs sm:text-sm text-gray-300 space-y-2.5">
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span>
-              <span><strong>Waiter Delay:</strong> Customer 10-15 minute waiter ke aane ka intezar karta hai.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span>
-              <span><strong>Menu Printing Kharcha:</strong> Rate ya dish badalne par ₹5,000-₹10,000 ke naye menu print karwao.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span>
-              <span><strong>KOT Galtiyan:</strong> Waiter ne Full ki jagah Half likha ya mirch ka note bhool gaya - khana barbad!</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span>
-              <span><strong>Kacchi Parchiyan:</strong> Raat ko hisaab jodte-jodte ghante lagte hain, cash mismatch hota hai.</span>
-            </li>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Problems -->
+        <div class="p-5 rounded-2xl bg-red-950/30 border border-red-500/40 space-y-3">
+          <h4 class="text-red-400 font-bold text-base flex items-center gap-2">
+            <span>❌ Offline Restaurant Ki 5 Badi Dikkatain</span>
+          </h4>
+          <ul class="text-xs text-gray-300 space-y-2.5 leading-relaxed">
+            <li>• <strong>Extra Waiter Ka Bada Kharcha:</strong> Rush hour sambhalne ke liye 2-3 extra waiter rakhne padte hain (₹12,000/waiter salary).</li>
+            <li>• <strong>Gande Menu &amp; Reprint Kharcha:</strong> Gravy/tel se menu kharab hota hai. Rate badle to ₹3,000 reprint lagte hain.</li>
+            <li>• <strong>Order Likhne Me Waiter Ki Galti:</strong> Half ki jagah Full likha ya mirch bhool gaya - pura khana barbad!</li>
+            <li>• <strong>Rush Me Table Ghanton Block Rehna:</strong> Menu lane aur order likhne me shuru ke 20 minute waste hote hain.</li>
+            <li>• <strong>Grahakon Ka Koi Data Nahi:</strong> Jo family khakar gayi, unka koi phone number nahi rehta (repeat marketing impossible).</li>
           </ul>
         </div>
 
-        <!-- New Way -->
-        <div class="bg-emerald-950/20 border-2 border-emerald-500/40 rounded-2xl p-5 space-y-3">
-          <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
-            <span>✅ Garam Masala Smart QR Solution</span>
-          </h3>
-          <ul class="text-xs sm:text-sm text-gray-300 space-y-2.5">
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span>
-              <span><strong>Instant Table Order:</strong> Scan kiya aur 60 second me seedha chef ke pass order gaya!</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span>
-              <span><strong>₹0 Menu Printing:</strong> Nayi dish ya rate badalna phone se 10 second me hota hai.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span>
-              <span><strong>100% Sahi Portion:</strong> Full vs Half aur cooking notes kitchen screen par saaf dikhte hain.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span>
-              <span><strong>Live Hisaab-Kitaab:</strong> Aaj kitni kamai hui, kaunsi dish biki - 1 click me report print karein.</span>
-            </li>
+        <!-- Solutions -->
+        <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-3">
+          <h4 class="text-emerald-400 font-bold text-base flex items-center gap-2">
+            <span>✅ Garam Masala Smart QR Ke Fayde</span>
+          </h4>
+          <ul class="text-xs text-gray-300 space-y-2.5 leading-relaxed">
+            <li>• <strong>1 Waiter Sambhale 10 Tables:</strong> Customer khud photos dekhkar order karta hai. Extra waiter hire nahi karna padega!</li>
+            <li>• <strong>₹0 Zero Menu Reprint Kharcha:</strong> Sabzi ya paneer ka rate badha, mobile se 5 second me update karo. Sabhi QR par live!</li>
+            <li>• <strong>100% Exact Order Kitchen Me:</strong> Customer ka portion aur chef instruction seedha kitchen display par jata hai.</li>
+            <li>• <strong>20 Minute Fast Table Turnover:</strong> Customer baithte hi 3 minute me order karta hai. Table jaldi khali hogi, zyada dhandha!</li>
+            <li>• <strong>Customer Mobile Directory:</strong> Har customer ka phone number auto-save hota hai. Holi, Diwali par WhatsApp offer bhejo!</li>
           </ul>
         </div>
       </div>
+    </section>
 
-      <div class="text-center bg-black/40 p-3 rounded-xl border border-gray-800 text-xs text-amber-300 font-semibold">
-        Natija: Customer khush, Waiter relaxed, aur Restaurant ka har mahine hazaron rupaye ka kharcha bacha!
+    <!-- SLIDE 3: FINANCIAL ROI -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Financial Breakdown</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Owner Ka Asli Hisaab: Har Mahine ₹45,000+ Ki Seedhi Bachat!</h3>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-[#0e1424] border border-amber-500/40 space-y-1">
+          <span class="text-xs font-bold text-amber-400">🧑‍🍳 Extra Waiter Salary Bachat</span>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400">₹12,000 / Mahina</div>
+          <p class="text-xs text-gray-300">1 extra waiter/helper ki salary aur khana-peena bachega kyunki customer khud scan karke order karega.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#0e1424] border border-amber-500/40 space-y-1">
+          <span class="text-xs font-bold text-amber-400">📜 Menu Reprinting Bachat</span>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400">₹3,000 / Mahina</div>
+          <p class="text-xs text-gray-300">Gande menu badalna ya rate change par nayi printing ka kharcha permanently ₹0 ho jayega.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#0e1424] border border-amber-500/40 space-y-1">
+          <span class="text-xs font-bold text-amber-400">⚡ Fast Table Turnover Extra Kamai</span>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400">₹30,000 / Mahina</div>
+          <p class="text-xs text-gray-300">Rush hour me har table 20 minute jaldi khali hogi. Roz 2-3 extra families baithne se daily ₹1,000-₹1,500 extra bachega.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#0e1424] border border-amber-500/40 space-y-1">
+          <span class="text-xs font-bold text-amber-400">🛡️ Order Mistake Wastage Bachat</span>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400">₹4,000 / Mahina</div>
+          <p class="text-xs text-gray-300">Waiter ki likhne ki galti khatam. Customer wahi payega jo usne khud select kiya hai.</p>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-950 to-green-950 border border-emerald-500 text-center font-bold text-sm text-emerald-200">
+        💡 Total Monthly Value: ₹45,000+ Net Profit &amp; Cost Savings Har Mahine!
       </div>
     </section>
 
-    <!-- SLIDE 3: 4 Big Profit Pillars -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="3">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Revenue Growth</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Restaurant Ke Liye 4 Badi Kamai &amp; Bachat Ke Raste
-        </h2>
+    <!-- SLIDE 4: CAPTAIN 1-CLICK VERIFICATION -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Owner's Biggest Concern Solved</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Captain 1-Click Confirmation: 'Ghar Baithe Fake Order Ka Ilaaj'</h3>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-auto">
-        <div class="bg-black/50 border border-amber-500/30 p-5 rounded-2xl flex flex-col justify-between space-y-3">
-          <div class="text-3xl">💰</div>
-          <div>
-            <h3 class="font-bold text-amber-300 text-base">100% Commission Free</h3>
-            <p class="text-xs text-gray-400 mt-1">Zomato/Swiggy ko 25-30% commission dena band. Har table ka 100% paisa aapki jeb me.</p>
-          </div>
-          <span class="text-[11px] text-emerald-400 font-bold">Bachat: ₹30,000+/mo</span>
-        </div>
-
-        <div class="bg-black/50 border border-amber-500/30 p-5 rounded-2xl flex flex-col justify-between space-y-3">
-          <div class="text-3xl">📈</div>
-          <div>
-            <h3 class="font-bold text-amber-300 text-base">15-20% Badi AOV Sale</h3>
-            <p class="text-xs text-gray-400 mt-1">Visual food photos aur category slider dekh kar customer roti, chaap, raita zyada mangwata hai.</p>
-          </div>
-          <span class="text-[11px] text-emerald-400 font-bold">Extra Bill: +₹200/table</span>
-        </div>
-
-        <div class="bg-black/50 border border-amber-500/30 p-5 rounded-2xl flex flex-col justify-between space-y-3">
-          <div class="text-3xl">⚡</div>
-          <div>
-            <h3 class="font-bold text-amber-300 text-base">25% Fast Table Turnover</h3>
-            <p class="text-xs text-gray-400 mt-1">Order jaldi banta hai, table 15 minute jaldi free hoti hai. Rush hours me zyada customers baithenge.</p>
-          </div>
-          <span class="text-[11px] text-emerald-400 font-bold">Zyada Tables = Zyada Sale</span>
-        </div>
-
-        <div class="bg-black/50 border border-amber-500/30 p-5 rounded-2xl flex flex-col justify-between space-y-3">
-          <div class="text-3xl">👥</div>
-          <div>
-            <h3 class="font-bold text-amber-300 text-base">Staff Cost Optimization</h3>
-            <p class="text-xs text-gray-400 mt-1">Kam waiters me bhi 20+ tables aasaani se manage hoti hain. Har mahine salary me bachat.</p>
-          </div>
-          <span class="text-[11px] text-emerald-400 font-bold">Bachat: ₹15,000+/mo</span>
-        </div>
-      </div>
-
-      <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-center text-amber-300 font-bold">
-        Ek aam restaurant jo daily 35 tables serve karta hai, wo is system se mahine me ₹50,000 se ₹80,000 extra bacha sakta hai!
-      </div>
-    </section>
-
-    <!-- SLIDE 4: Fake Order Security -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="4">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Zero Risk Security</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Exclusive Feature: "Captain 1-Click Confirmation"
-        </h2>
-        <p class="text-xs text-gray-400 mt-0.5">Agar koi ganda customer ghar baith kar purani photo se order karega to?</p>
-      </div>
-
-      <div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl space-y-1">
-        <h3 class="text-sm font-bold text-amber-300 flex items-center gap-1.5">
-          <span>🛡️ 100% Foolproof Kitchen Protection</span>
-        </h3>
-        <p class="text-xs text-gray-300">
-          Humare system me customer ka order seedha banna shuru nahi hota. Pehle waiter/captain table verify karta hai.
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/50 space-y-1.5">
+        <h4 class="text-base font-black text-amber-300 flex items-center gap-2">
+          <span>🛡️ Khana Tabhi Banega Jab Waiter Table Confirm Karega!</span>
+        </h4>
+        <p class="text-xs text-gray-200 leading-relaxed">
+          Agar koi shaitani customer QR code ki photo khinch kar ghar chala jaye aur wahan se prank order kare, to restaurant ko 1 rupaye ka bhi nuksan nahi hoga! Jab tak restaurant ka captain table par customer ko dekhkar 1-Click "Accept" nahi karega, tab tak kitchen me khana banna shuru hi nahi hoga!
         </p>
       </div>
 
-      <!-- 4 Steps -->
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 my-auto">
-        <div class="bg-black/50 border border-gray-800 p-4 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-amber-400 block">Step 1</span>
-          <h4 class="font-bold text-white text-sm">Order Receive Hua</h4>
-          <p class="text-xs text-gray-400">Customer ke mobile par status rehta hai: 'Table Verification In Progress'.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-gray-800 space-y-1.5">
+          <div class="text-amber-400 font-black text-sm">Step 1: Ghanti Baji 🔔</div>
+          <p class="text-xs text-gray-300">Counter aur Captain ke phone par chime baji: 'Table 4 par Shahi Paneer order hua'. Admin screen par golden alert aaya.</p>
         </div>
-
-        <div class="bg-black/50 border border-gray-800 p-4 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-amber-400 block">Step 2</span>
-          <h4 class="font-bold text-white text-sm">Sound Bell Alert</h4>
-          <p class="text-xs text-gray-400">Admin screen par ghanti bajti hai aur Table number highlight hota hai.</p>
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-gray-800 space-y-1.5">
+          <div class="text-amber-400 font-black text-sm">Step 2: Table Check 👁️</div>
+          <p class="text-xs text-gray-300">Captain/Waiter ne Table 4 par nazar daali ki sach me family baithi hai ya nahi.</p>
         </div>
-
-        <div class="bg-black/50 border border-emerald-500/40 p-4 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-emerald-400 block">Step 3</span>
-          <h4 class="font-bold text-emerald-300 text-sm">✅ Table Par Log Hain?</h4>
-          <p class="text-xs text-gray-300">Waiter dekhta hai Table 4 par sach me log hain. 1-Click me 'Accept & Send to Kitchen' dabata hai!</p>
+        <div class="p-4 rounded-2xl bg-[#090d18] border border-emerald-500/50 space-y-1.5">
+          <div class="text-emerald-400 font-black text-sm">Step 3: 1-Click Decision ⚡</div>
+          <p class="text-xs text-gray-300">Family baithi hai to <strong>'Accept &amp; Send to Kitchen'</strong> dabao. Table khali hai to <strong>'Reject (Fake Order)'</strong> dabao!</p>
         </div>
-
-        <div class="bg-black/50 border border-red-500/40 p-4 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-red-400 block">Step 4</span>
-          <h4 class="font-bold text-red-400 text-sm">❌ Table Khaali Hai?</h4>
-          <p class="text-xs text-gray-300">Agar table par koi nahi hai (ghar se prank kiya), to 1-Click me 'Reject' dabaya. Khana banega hi nahi, 0% Loss!</p>
-        </div>
-      </div>
-
-      <div class="text-center text-xs text-gray-400">
-        Plus: Cancelled orders ko list se 1-click me <strong>"Permanent Delete"</strong> karne ka option bhi shamil hai.
       </div>
     </section>
 
-    <!-- SLIDE 5: Customer Experience -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="5">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">User Delight</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Customer Ke Liye 5-Star VIP Experience: Zero App, Zero Login
-        </h2>
+    <!-- SLIDE 5: KITCHEN BELL & REAL TIME -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Live Kitchen Audio &amp; Clock</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Kitchen Dining Chime Bell (Ding-Dong 🔔) &amp; IST Time</h3>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">📱</div>
-          <h4 class="font-bold text-amber-300 text-sm">No App Download</h4>
-          <p class="text-xs text-gray-300">Customer ko koi 50MB ka app download nahi karna. Phone ke camera se scan kiya aur menu open!</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="p-5 rounded-2xl bg-[#090d18] border border-amber-500/40 space-y-2.5">
+          <h4 class="text-base font-black text-amber-400 flex items-center gap-2">
+            <span>🔔 Noisy Kitchen Me Bhi Awaaz Saaf Aayegi</span>
+          </h4>
+          <ul class="text-xs text-gray-300 space-y-2 leading-relaxed">
+            <li>• <strong>Authentic Brass Desk Bell:</strong> Hotel service counter jaisi 2-cycle 'Ding-Dong ... Ding-Dong' chime bajti hai.</li>
+            <li>• <strong>Multi-Device Polling Engine:</strong> Customer apne mobile se order kare, counter ke laptop/phone par turant bell bajegi.</li>
+            <li>• <strong>Mobile Vibration Alert:</strong> Chef aur captain ke pocket me phone vibrate bhi hota hai taaki shor me bhi order miss na ho.</li>
+            <li>• <strong>1-Click 'Test Bell 🛎️' Button:</strong> Screen par test button diya hai, kabhi bhi sound check kar sakte hain.</li>
+          </ul>
         </div>
 
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">🔒</div>
-          <h4 class="font-bold text-amber-300 text-sm">No Login, No OTP</h4>
-          <p class="text-xs text-gray-300">Kissi password ya OTP ka jhanjhat nahi. Family ya couples aasaani se bina rukawat ke order karte hain.</p>
+        <div class="p-5 rounded-2xl bg-[#090d18] border border-emerald-500/40 space-y-2.5">
+          <h4 class="text-base font-black text-emerald-400 flex items-center gap-2">
+            <span>⏰ Accurate Indian Time &amp; Instant Delete</span>
+          </h4>
+          <ul class="text-xs text-gray-300 space-y-2 leading-relaxed">
+            <li>• <strong>Exact 12-Hour Indian Local Time:</strong> Order card par saaf-saaf 'Time: 08:35 PM' dikhega, koi UTC/foreign lag nahi.</li>
+            <li>• <strong>Live Elapsed Timer:</strong> Card par dikhta hai: '2 min pehle', '5 min pehle' - waiter ko pata rehta hai kis table ko pehle khana dena hai.</li>
+            <li>• <strong>Instant Permanent Delete (🗑️):</strong> Cancelled ya test order ho, 1 click me permanently gayab ho jata hai.</li>
+            <li>• <strong>Live Status for Customer:</strong> Customer ke phone par status update hota hai: 'Pending -> In Kitchen -> Served'.</li>
+          </ul>
         </div>
-
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">🥘</div>
-          <h4 class="font-bold text-amber-300 text-sm">Category Slider (101 Dishes)</h4>
-          <p class="text-xs text-gray-300">Paneer, Chaap, Rolls, Tandoor, Chinese - smooth category slider se browse karna behad aasan hai.</p>
-        </div>
-
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">🥣</div>
-          <h4 class="font-bold text-amber-300 text-sm">Full vs Half Pricing Clarity</h4>
-          <p class="text-xs text-gray-300">Customer ko pehle se pata hota hai Full ka kitna rate hai aur Half ka kitna. No confusion on bill.</p>
-        </div>
-
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">🕒</div>
-          <h4 class="font-bold text-amber-300 text-sm">Live Order Status</h4>
-          <p class="text-xs text-gray-300">Phone screen par dikhta hai: 'Table Verification' ➔ 'Kitchen Me Ban Raha Hai' ➔ 'Table Par Serve Hua'.</p>
-        </div>
-
-        <div class="bg-black/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-          <div class="text-2xl">💬</div>
-          <h4 class="font-bold text-amber-300 text-sm">Chef Special Instructions</h4>
-          <p class="text-xs text-gray-300">Customer dish ke sath likh sakta hai: 'Kam mirch', 'Extra crunchy', 'Drinks pehle lana'.</p>
-        </div>
-      </div>
-
-      <div class="bg-black/30 p-3 rounded-xl border border-gray-800 text-center text-xs text-gray-400">
-        Family dining aur youth customers ko modern premium feel milta hai jisse restaurant ki Google rating aur reputation badhti hai!
       </div>
     </section>
 
-    <!-- SLIDE 6: Kitchen Display & Stock Control -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="6">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Kitchen & Operations</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Kitchen Display System (KDS) &amp; Real-time Stock Control
-        </h2>
+    <!-- SLIDE 6: 1-CLICK STOCK & PRICE CONTROL -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Full Operational Freedom</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Stock &amp; Price Control: 5 Second Me Rate Badlo Ya Sold Out Karo</h3>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 my-auto">
-        <div class="bg-black/50 border border-gray-800 p-5 rounded-2xl space-y-3">
-          <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
-            <span>📋 Live Kitchen Display Screen</span>
-          </h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Chef ke samne kitchen me tablet ya screen lagi hoti hai. Kaunsi table se kya order aaya hai, kitni quantity hai, aur customer ka special note kya hai - sab transparent rehta hai. <strong>Paper KOT kho jane ka dar hamesha ke liye khatam!</strong>
-          </p>
+      <div class="p-5 rounded-2xl bg-[#090d18] border border-amber-500/30 space-y-3">
+        <h4 class="text-base font-black text-amber-400">
+          🍲 Restaurant Owner Ko Kisi Ke Aage Haath Nahi Phailana Padega!
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-300 leading-relaxed pt-2">
+          <div class="p-3.5 rounded-xl bg-black/60 border border-gray-800">
+            <strong class="text-amber-300 block text-sm mb-1">1-Click 'In Stock' / 'Sold Out' Toggle:</strong>
+            Shaam ko Paneer Tikka ya Dal Handi khatam ho gayi? 1 click me 'Sold Out' mark karo. Customer mang hi nahi payega, naraz hone ka sawal hi nahi!
+          </div>
+          <div class="p-3.5 rounded-xl bg-black/60 border border-gray-800">
+            <strong class="text-amber-300 block text-sm mb-1">Instant Rate Edit (No Printing Cost):</strong>
+            Sabzi, tel ya butter mehenga hua? 5 second me ₹250 ka ₹280 karo. Sabhi tables ke QR me turant naya rate update ho jayega.
+          </div>
+          <div class="p-3.5 rounded-xl bg-black/60 border border-gray-800">
+            <strong class="text-amber-300 block text-sm mb-1">101 Dishes Pre-Loaded:</strong>
+            Starters, Tandoor, Main Course, Chinese, Thali, Breads, Desserts - saari dishes pre-seeded hain HD photos ke sath.
+          </div>
+          <div class="p-3.5 rounded-xl bg-black/60 border border-gray-800">
+            <strong class="text-amber-300 block text-sm mb-1">Chef's Special ⭐ Badges:</strong>
+            Aapki special dishes par 'Chef Special' badge dikhta hai jisse grahak zyada profitable dishes order karte hain.
+          </div>
         </div>
-
-        <div class="bg-black/50 border border-gray-800 p-5 rounded-2xl space-y-3">
-          <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
-            <span>🔴 1-Click "Sold Out / In Stock" Control</span>
-          </h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Agar Malai Chaap ya Dal Makhni khatam ho gayi, to manager mobile se 1 second me use <strong>"Sold Out"</strong> mark kar sakta hai. Customer wahi order karega jo kitchen me banna sambhav hai. <strong>Customer narazgi zero!</strong>
-          </p>
-        </div>
-
-        <div class="bg-black/50 border border-gray-800 p-5 rounded-2xl space-y-3">
-          <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
-            <span>🔄 3-Step Lifecycle Workflow</span>
-          </h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Waiter ya cashier 1 click me status update karta hai: <strong>Start Cooking ➔ Mark Served to Table ➔ Mark Paid &amp; Completed</strong>. Kaun si table ka bill pending hai, sab screen par saaf dikhta hai.
-          </p>
-        </div>
-
-        <div class="bg-black/50 border border-gray-800 p-5 rounded-2xl space-y-3">
-          <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
-            <span>🗑️ Permanent Delete Cancelled Orders</span>
-          </h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Jo orders cancel ya reject ho gaye, unhe 1 click me permanently delete kar sakte hain, ya <strong>"Clear All Cancelled"</strong> se poora screen fresh rakh sakte hain.
-          </p>
-        </div>
-      </div>
-
-      <div class="text-center text-xs text-gray-400">
-        Staff training me sirf 10 minute lagte hain — ise chalana WhatsApp use karne se bhi aasan hai!
       </div>
     </section>
 
-    <!-- SLIDE 7: Daily Sales & Cost Analytics -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="7">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Owner Power Tool</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Daily Sales &amp; Cost Hisaab-Kitaab (दैनिक रिपोर्ट)
-        </h2>
-        <p class="text-xs text-gray-400 mt-0.5">Owner kahin par bhi ho, apne mobile se poore restaurant ka hisaab live dekh sakta hai.</p>
+    <!-- SLIDE 7: DAILY SALES & COST REPORT -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Business Analytics</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Daily Sales &amp; Cost Hisaab: Raat Ko Parchi Jodne Ki Chhutti!</h3>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-black/60 border border-amber-500/40 p-4 rounded-2xl text-center">
-          <span class="text-[10px] text-gray-400 uppercase font-bold block">Total Daily Sales</span>
-          <span class="text-xl sm:text-2xl font-black text-amber-300 font-cinzel">₹ Live Total</span>
+        <div class="p-3.5 rounded-2xl bg-[#090d18] border border-amber-500/30 text-center">
+          <div class="text-xl mb-1">📊</div>
+          <div class="font-bold text-xs text-amber-400">Total Daily Sale</div>
+          <div class="text-[11px] text-gray-300 mt-0.5">Rozana cash/UPI turnover</div>
         </div>
-        <div class="bg-black/60 border border-emerald-500/40 p-4 rounded-2xl text-center">
-          <span class="text-[10px] text-gray-400 uppercase font-bold block">Orders Served</span>
-          <span class="text-xl sm:text-2xl font-black text-emerald-400 font-cinzel">Table Count</span>
+        <div class="p-3.5 rounded-2xl bg-[#090d18] border border-amber-500/30 text-center">
+          <div class="text-xl mb-1">🔢</div>
+          <div class="font-bold text-xs text-amber-400">Order Numbers</div>
+          <div class="text-[11px] text-gray-300 mt-0.5">Completed vs Cancelled</div>
         </div>
-        <div class="bg-black/60 border border-blue-500/40 p-4 rounded-2xl text-center">
-          <span class="text-[10px] text-gray-400 uppercase font-bold block">Avg Bill Value</span>
-          <span class="text-xl sm:text-2xl font-black text-blue-300 font-cinzel">₹ AOV/Table</span>
+        <div class="p-3.5 rounded-2xl bg-[#090d18] border border-amber-500/30 text-center">
+          <div class="text-xl mb-1">🏆</div>
+          <div class="font-bold text-xs text-amber-400">Best-Selling Dishes</div>
+          <div class="text-[11px] text-gray-300 mt-0.5">Top-selling item analytics</div>
         </div>
-        <div class="bg-black/60 border border-red-500/40 p-4 rounded-2xl text-center">
-          <span class="text-[10px] text-gray-400 uppercase font-bold block">Prank Waste Saved</span>
-          <span class="text-xl sm:text-2xl font-black text-red-400 font-cinzel">₹ Saved</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto">
-        <div class="bg-black/40 border border-gray-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-amber-300 text-sm">📅 Any Date Hisaab-Kitaab Filter</h4>
-          <p class="text-xs text-gray-300">
-            <strong>Today (आज)</strong>, <strong>Yesterday (कल)</strong>, <strong>Last 7 Days</strong>, ya Calendar se koi bhi puraani tareekh select karke us din ka total hisaab dekhein.
-          </p>
-        </div>
-
-        <div class="bg-black/40 border border-gray-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-amber-300 text-sm">🥘 Top Selling Dishes Report</h4>
-          <p class="text-xs text-gray-300">
-            Pata chale kaun si dish sabse zyada biki (jaise Shahi Paneer 14 plate, Dal Makhni 9 plate). Isse grocery aur raw material lana 100% accurate ho jata hai.
-          </p>
-        </div>
-
-        <div class="bg-black/40 border border-gray-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-amber-300 text-sm">📍 Table-Wise Revenue Report</h4>
-          <p class="text-xs text-gray-300">
-            Kaunsi table se kitni kamai aayi (Table 1 vs Table 4 vs Rooftop), seating efficiency ka pata chalta hai.
-          </p>
-        </div>
-
-        <div class="bg-black/40 border border-gray-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-amber-300 text-sm">🖨️ 1-Click Print Daily Closing Summary</h4>
-          <p class="text-xs text-gray-300">
-            Raat ko dukan band karte waqt 1-click me closing summary ka receipt ya PDF nikal kar file me rakhein.
-          </p>
+        <div class="p-3.5 rounded-2xl bg-[#090d18] border border-amber-500/30 text-center">
+          <div class="text-xl mb-1">🖨️</div>
+          <div class="font-bold text-xs text-amber-400">1-Click Print &amp; PDF</div>
+          <div class="text-[11px] text-gray-300 mt-0.5">Raat ko daily report print</div>
         </div>
       </div>
 
-      <div class="text-center text-xs text-amber-400 font-semibold">
-        Kacche panno aur khata-bahi ki jhanjhat hamesha ke liye khatam!
+      <div class="p-4 rounded-2xl bg-[#090d18] border border-emerald-500/40 space-y-2">
+        <h4 class="text-sm font-black text-emerald-400">📈 Chori aur Gaban Par 100% Rok (Complete Transparency)</h4>
+        <p class="text-xs text-gray-300 leading-relaxed">
+          Har order ka digital VR-number hota hai. Waiter bina bill dikhaye jeb me paisa nahi rakh sakta. Aur owner chahe restaurant me na ho — apne ghar ya gaadi me baithkar bhi apne mobile par live dekh sakta hai ki abhi restaurant me kitni sale chal rahi hai!
+        </p>
       </div>
     </section>
 
-    <!-- SLIDE 8: Financial ROI Numbers -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="8">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Business Mathematics</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Monthly Financial Impact &amp; ROI (Numbers Jo Baat Karte Hain)
-        </h2>
+    <!-- SLIDE 8: CUSTOMER DATA & WHATSAPP MARKETING -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Customer Loyalty &amp; Growth</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Grahakon Ka Mobile Database: Holi, Diwali &amp; Sunday Offers Bhejo!</h3>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-auto">
-        <div class="bg-black/50 border border-emerald-500/40 p-5 rounded-2xl text-center space-y-2">
-          <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-cinzel">₹35,000+</span>
-          <h4 class="font-bold text-amber-300 text-sm">Commission Saved</h4>
-          <p class="text-[11px] text-gray-400">Dine-in orders par Zomato/Swiggy commission ki 100% bachat</p>
-        </div>
-
-        <div class="bg-black/50 border border-emerald-500/40 p-5 rounded-2xl text-center space-y-2">
-          <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-cinzel">+18%</span>
-          <h4 class="font-bold text-amber-300 text-sm">Average Bill Rise</h4>
-          <p class="text-[11px] text-gray-400">Visual photos aur category slider se extra food add-on sale</p>
-        </div>
-
-        <div class="bg-black/50 border border-emerald-500/40 p-5 rounded-2xl text-center space-y-2">
-          <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-cinzel">₹15,000</span>
-          <h4 class="font-bold text-amber-300 text-sm">Staff Optimization</h4>
-          <p class="text-[11px] text-gray-400">Kam waiters me 2x tables handling, monthly salary optimization</p>
-        </div>
-
-        <div class="bg-black/50 border border-emerald-500/40 p-5 rounded-2xl text-center space-y-2">
-          <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-cinzel">₹12,000</span>
-          <h4 class="font-bold text-amber-300 text-sm">Menu Printing Saved</h4>
-          <p class="text-[11px] text-gray-400">Digital menu updating with zero paper re-printing expense</p>
-        </div>
-      </div>
-
-      <div class="bg-gradient-to-r from-emerald-950/60 to-black p-6 rounded-2xl border-2 border-emerald-500/40 text-center space-y-2">
-        <h3 class="font-cinzel text-xl sm:text-2xl font-black text-emerald-300">
-          Total Extra Monthly Profit: ₹60,000 - ₹80,000+
-        </h3>
-        <p class="text-xs sm:text-sm text-gray-200 max-w-2xl mx-auto">
-          Yeh software restaurant ke liye koi kharcha nahi hai, balki Day 1 se hi positive cash flow aur extra munafa dene wali machine hai!
-        </p>
-      </div>
-
-      <div class="text-center text-xs text-gray-400">
-        System ki lagat pehle hi mahine me 5x return me wapas nikal aati hai.
+      <div class="p-5 rounded-2xl bg-[#090d18] border border-amber-500/30 space-y-3">
+        <h4 class="text-base font-black text-amber-400">
+          📱 Offline Restaurant Ka Sabse Bada Khazana: Grahak Ka Phone Number!
+        </h4>
+        <ul class="text-xs text-gray-300 space-y-2.5 leading-relaxed">
+          <li>• <strong>Auto-Save Customer Database:</strong> Har bar jab family order karti hai, unka Naam aur Mobile Number database me jud jata hai. 2 mahine me aapke paas 500-1,000 local parivaron ka data hoga.</li>
+          <li>• <strong>Diwali / New Year Festive Campaigns:</strong> Tyohar par sabhi grahakon ko 1 click me WhatsApp message bhejo: 'Garam Masala me Diwali Special Handi Paneer par 10% discount'.</li>
+          <li>• <strong>Repeat Footfall (Wapas Bulao):</strong> Jo grahak 1 mahine se nahi aaya, use automatically 'We Miss You' message bhejkar wapas attract karo.</li>
+          <li>• <strong>Zero Marketing Cost:</strong> Paper pamhplet chhapwana aur batwana band. Sidha grahak ke WhatsApp par direct promotion!</li>
+        </ul>
       </div>
     </section>
 
-    <!-- SLIDE 9: Simple 3-Step Launch -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6" data-slide="9">
-      <div>
-        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider">Implementation</span>
-        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
-          Restaurant Me Ise Chalu Kaise Karein? (3 Simple Steps)
-        </h2>
+    <!-- SLIDE 9: COMMERCIAL PRICING PLANS -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Flexible Pricing Plans</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Owner Ke Liye 2 Aasan Aur Kifayati Pricing Plans</h3>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
-        <div class="bg-black/50 border-2 border-amber-500/40 p-6 rounded-2xl space-y-3 relative">
-          <span class="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-            ⏱️ 1 Din Me Ready
-          </span>
-          <h3 class="font-bold text-amber-300 text-lg">Step 1: Table QR Standees</h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Admin panel se sabhi tables ke QR code ready hain. Print karke acrylic standees me har table par lagayein.
-          </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Plan 1 -->
+        <div class="p-5 rounded-2xl bg-[#090d18] border-2 border-amber-400 space-y-3 shadow-xl">
+          <div class="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black">
+            ⭐ RECOMMENDED FOR OWNER
+          </div>
+          <h4 class="text-lg font-black text-white">PLAN 1: One-Time Full Setup</h4>
+          <div class="text-2xl font-black text-emerald-400">₹12,000 - ₹15,000 (Ek Baar Me Pura Deal)</div>
+          <ul class="text-xs text-gray-300 space-y-1.5 leading-relaxed">
+            <li>✓ Pura System Setup &amp; 101 Dishes Live</li>
+            <li>✓ Sabhi Tables Ke QR Standee Printable PDF Files</li>
+            <li>✓ 1 Pura Saal Cloud Server &amp; Hosting FREE</li>
+            <li>✓ Waiter &amp; Captain Ki Complete Training</li>
+            <li>✓ 24/7 Peak Hours Emergency Support</li>
+            <li>✓ Next Year Se: Sirf ₹2,500/Saal Server Renewal</li>
+          </ul>
         </div>
 
-        <div class="bg-black/50 border-2 border-amber-500/40 p-6 rounded-2xl space-y-3 relative">
-          <span class="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-            ⏱️ Sirf 15 Minute
-          </span>
-          <h3 class="font-bold text-amber-300 text-lg">Step 2: Staff 15-Min Demo</h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Staff ko '1-Click Captain Confirmation' aur Kitchen display samjhana. WhatsApp chalane se bhi aasan hai!
-          </p>
+        <!-- Plan 2 -->
+        <div class="p-5 rounded-2xl bg-[#090d18] border border-gray-700 space-y-3">
+          <div class="inline-block px-3 py-1 rounded-full bg-gray-800 text-gray-300 text-xs font-black">
+            💡 LOW-BUDGET MONTHLY
+          </div>
+          <h4 class="text-lg font-black text-white">PLAN 2: Monthly Maintenance AMC</h4>
+          <div class="text-2xl font-black text-emerald-400">₹999 / Mahina (Sirf ₹33/Din - Ek Chai Barabar!)</div>
+          <ul class="text-xs text-gray-300 space-y-1.5 leading-relaxed">
+            <li>✓ Chhota One-time Setup: Sirf ₹4,999</li>
+            <li>✓ Monthly ₹999 Me Cloud Server &amp; Uptime</li>
+            <li>✓ Database Cloud Backup 24/7 Surakshit</li>
+            <li>✓ Emergency Bug Fix &amp; Support Included</li>
+            <li>✓ Jab Chahe Band Ya Renew Kar Sakte Hain</li>
+            <li>✓ Owner Ki Jeb Par Shuru Me Koi Bojh Nahi</li>
+          </ul>
         </div>
-
-        <div class="bg-black/50 border-2 border-amber-500/40 p-6 rounded-2xl space-y-3 relative">
-          <span class="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-            ⏱️ Day 1 Se Live
-          </span>
-          <h3 class="font-bold text-amber-300 text-lg">Step 3: Go Live &amp; Earn</h3>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            Customer scan karke order karenge, kitchen me bell bajegi, aur aapke mobile par daily sales ki report aayegi!
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-black/40 p-4 rounded-xl border border-gray-800 text-center text-xs text-gray-300">
-        Poora software, database aur menu card (101 items) pehle se hi 100% tayyar aur live tested hai!
       </div>
     </section>
 
-    <!-- SLIDE 10: Closing Call to Action -->
-    <section class="slide flex-col justify-between w-full bg-[#0d1222] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-12 shadow-2xl relative overflow-hidden" data-slide="10">
-      <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="space-y-6 text-center my-auto">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black tracking-widest uppercase">
-          ✦ READY TO LAUNCH ✦
-        </div>
-
-        <h2 class="font-cinzel text-3xl sm:text-5xl font-black text-white">
-          Garam Masala Family Restaurant Ko Banayein Smart &amp; Digital!
-        </h2>
-
-        <p class="text-amber-400 font-cinzel text-lg sm:text-2xl font-bold max-w-3xl mx-auto">
-          Aaj Hi Live Demo Dekhein Aur Apne Restaurant Ki Kamai Ko Naye Level Par Le Jayein.
-        </p>
-
-        <p class="text-gray-300 text-sm max-w-xl mx-auto">
-          Aapke paas live QR dining menu, captain verification protection, kitchen display aur daily sales analytics sab ek hi system me available hai.
-        </p>
-
-        <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
-          <div class="p-4 rounded-2xl bg-black/60 border border-amber-500/40 text-center">
-            <span class="text-xs text-gray-400 block">System Status</span>
-            <span class="text-sm font-bold text-emerald-400">100% Ready &amp; Live</span>
-          </div>
-          <div class="p-4 rounded-2xl bg-black/60 border border-amber-500/40 text-center">
-            <span class="text-xs text-gray-400 block">Seeded Menu</span>
-            <span class="text-sm font-bold text-amber-300">101 Dishes (10 Categories)</span>
-          </div>
-          <div class="p-4 rounded-2xl bg-black/60 border border-amber-500/40 text-center">
-            <span class="text-xs text-gray-400 block">Security</span>
-            <span class="text-sm font-bold text-blue-300">Captain 1-Click Verification</span>
-          </div>
-        </div>
+    <!-- SLIDE 10: IMMEDIATE LAUNCH -->
+    <section class="slide flex-col space-y-5 w-full glass-card p-6 sm:p-10 rounded-3xl shadow-2xl">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider">Ready to Roll</span>
+        <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Aage Ka Kadam: Sirf 24 Ghante Me Restaurant Live Karein!</h3>
       </div>
 
-      <div class="border-t border-gray-800 pt-4 text-center text-xs text-gray-400">
-        Aaiye abhi ek live test order karke dekhein! Dhanyawad &bull; Garam Masala Family Restaurant
+      <div class="p-5 rounded-2xl bg-[#090d18] border border-amber-500/40 space-y-3">
+        <h4 class="text-base font-black text-amber-400">
+          🚀 Implementation Plan (Bina Kisi Rukawat Ke Shuru Karein)
+        </h4>
+        <ul class="text-xs text-gray-300 space-y-2.5 leading-relaxed">
+          <li>✦ <strong>Day 1 - Table Standees Printing:</strong> Garam Masala ke premium acrylic table QR standees taiyar karke tables par lagana.</li>
+          <li>✦ <strong>Day 1 - 15 Minute Staff Training:</strong> Waiter aur counter staff ko 15 minute me samjhana (system itna aasan hai ki koi bhi 5 minute me seekh jata hai).</li>
+          <li>✦ <strong>Day 1 - Live Launch &amp; Trial:</strong> Same day dinner rush me system chalu karna aur pehle din se hi table turnover aur bachat ka asar dekhna.</li>
+          <li>✦ <strong>Ongoing Tech Support:</strong> Hum back-end par 24/7 active rahenge taaki restaurant ka kaam bilkul makhhan ki tarah chalta rahe.</li>
+        </ul>
+      </div>
+
+      <div class="text-center pt-2">
+        <div class="inline-block text-amber-300 font-bold text-sm bg-black/60 px-6 py-2.5 rounded-full border border-amber-500/40 shadow">
+          🎉 Chaliye Garam Masala ko Smart &amp; Profitable Banate Hain!
+        </div>
       </div>
     </section>
 
   </main>
 
-  <script>
-    let currentSlide = 1;
-    const totalSlides = 10;
+  <!-- Keyboard navigation hint & Footer -->
+  <footer class="no-print border-t border-gray-800 bg-[#0d1222]/80 px-4 py-2.5 text-center text-[11px] text-gray-400 flex items-center justify-between">
+    <span>Tip: Keyboard <strong>Left (◀)</strong> aur <strong>Right (▶)</strong> arrow keys se slides badal sakte hain.</span>
+    <span class="text-amber-400 font-bold">Garam Masala Family Restaurant Pitch Deck</span>
+  </footer>
 
-    function showSlide(n) {
-      const slides = document.querySelectorAll('.slide');
-      if (n < 1) currentSlide = 1;
-      else if (n > totalSlides) currentSlide = totalSlides;
-      else currentSlide = n;
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
 
       slides.forEach((s, idx) => {
-        if (idx === currentSlide - 1) {
-          s.classList.add('active');
-        } else {
-          s.classList.remove('active');
-        }
+        s.classList.toggle('active', idx === index);
       });
-
-      document.getElementById('slideIndicator').innerText = `Slide ${currentSlide} / ${totalSlides}`;
+      currentSlide = index;
+      counter.innerText = `Slide ${currentSlide + 1} / ${slides.length}`;
     }
 
     function nextSlide() {
-      showSlide(currentSlide + 1);
+      if (currentSlide < slides.length - 1) {
+        showSlide(currentSlide + 1);
+      }
     }
 
     function prevSlide() {
-      showSlide(currentSlide - 1);
+      if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+      }
     }
 
-    // Keyboard navigation (Arrow keys & Spacebar)
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        e.preventDefault();
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
         nextSlide();
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault();
+      } else if (e.key === 'ArrowLeft') {
         prevSlide();
       }
     });
