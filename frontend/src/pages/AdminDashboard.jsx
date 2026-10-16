@@ -5,6 +5,7 @@ import AdminOrders from './AdminOrders';
 import AdminMenu from './AdminMenu';
 import AdminTablesQr from './AdminTablesQr';
 import AdminProfile from './AdminProfile';
+import AdminDailySales from './AdminDailySales';
 import { api } from '../api/api';
 
 export default function AdminDashboard({ onNavigateToMenu }) {
@@ -101,14 +102,21 @@ export default function AdminDashboard({ onNavigateToMenu }) {
       <div className="no-print grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         {/* Today's Revenue */}
-        <div className="p-4 rounded-2xl bg-[#0f1424] border border-amber-500/30 flex items-center space-x-3 shadow-lg">
+        <div 
+          onClick={() => setActiveTab('sales')}
+          className="p-4 rounded-2xl bg-[#0f1424] border border-amber-500/30 hover:border-amber-400/80 cursor-pointer flex items-center space-x-3 shadow-lg transition-all hover:scale-[1.02]"
+          title="Click to view daily hisaab-kitaab & sales analytics"
+        >
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
             <IndianRupee className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] text-gray-400 uppercase font-bold tracking-wider block">
-              Today's Sales
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-gray-400 uppercase font-bold tracking-wider block">
+                Today's Sales
+              </span>
+              <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-bold">Report ↗</span>
+            </div>
             <span className="text-lg sm:text-xl font-extrabold text-amber-300">
               ₹{stats.totalRevenueToday}
             </span>
@@ -201,6 +209,18 @@ export default function AdminDashboard({ onNavigateToMenu }) {
         </button>
 
         <button
+          onClick={() => setActiveTab('sales')}
+          className={`py-3 px-4 font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'sales'
+              ? 'border-amber-400 text-amber-300 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <IndianRupee className="w-4 h-4 text-amber-400" />
+          <span>Daily Sales &amp; Cost Hisaab (दैनिक रिपोर्ट)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('tables')}
           className={`py-3 px-4 font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'tables'
@@ -229,6 +249,7 @@ export default function AdminDashboard({ onNavigateToMenu }) {
       <div>
         {activeTab === 'orders' && <AdminOrders />}
         {activeTab === 'menu' && <AdminMenu />}
+        {activeTab === 'sales' && <AdminDailySales />}
         {activeTab === 'tables' && <AdminTablesQr />}
         {activeTab === 'profile' && <AdminProfile />}
       </div>

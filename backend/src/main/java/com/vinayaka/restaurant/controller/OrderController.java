@@ -87,4 +87,36 @@ public class OrderController {
             return ResponseEntity.badRequest().body(err);
         }
     }
+
+    // STAFF / ADMIN: Delete an order permanently (e.g. cancelled order)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+        try {
+            orderService.deleteOrder(id);
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("success", true);
+            resp.put("message", "Order permanently deleted");
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(err);
+        }
+    }
+
+    // STAFF / ADMIN: Bulk delete all cancelled orders
+    @DeleteMapping("/cancelled")
+    public ResponseEntity<?> deleteCancelledOrders() {
+        try {
+            int deletedCount = orderService.deleteCancelledOrders();
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("success", true);
+            resp.put("deletedCount", deletedCount);
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(err);
+        }
+    }
 }

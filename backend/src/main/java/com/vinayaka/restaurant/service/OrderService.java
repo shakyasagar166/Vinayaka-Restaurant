@@ -107,6 +107,22 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
+    public void deleteOrder(Long id) {
+        Order order = getOrderById(id);
+        orderRepository.delete(order);
+    }
+
+    @Transactional
+    public int deleteCancelledOrders() {
+        List<Order> cancelled = orderRepository.findByStatusOrderByCreatedAtDesc(OrderStatus.CANCELLED);
+        int count = cancelled.size();
+        if (count > 0) {
+            orderRepository.deleteAll(cancelled);
+        }
+        return count;
+    }
+
     public Map<String, Object> getDashboardStats() {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);

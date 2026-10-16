@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle } from 'lucide-react';
+import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle, Trash2 } from 'lucide-react';
 import { api } from '../api/api';
 
 // Browser synthesizer chime for new incoming kitchen orders
@@ -109,7 +109,32 @@ export default function AdminOrders() {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Kya aap sach me is order ko permanently delete karna chahte hain?")) {
+      return;
+    }
+    try {
+      await api.deleteOrder(orderId);
+      fetchOrders();
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
+  };
+
+  const handleDeleteAllCancelled = async () => {
+    if (!window.confirm(`Kya aap sach me sabhi (${cancelledCount}) cancelled orders ko permanently delete karna chahte hain?`)) {
+      return;
+    }
+    try {
+      await api.deleteCancelledOrders();
+      fetchOrders();
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
+  };
+
   const pendingCount = orders.filter(o => o.status === 'PENDING').length;
+  const cancelledCount = orders.filter(o => o.status === 'CANCELLED').length;
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -198,7 +223,8 @@ export default function AdminOrders() {
             { id: 'PENDING', label: 'Verify Table', count: pendingCount },
             { id: 'PREPARING', label: 'In Kitchen' },
             { id: 'SERVED', label: 'Served' },
-            { id: 'COMPLETED', label: 'Completed' }
+            { id: 'COMPLETED', label: 'Completed' },
+            { id: 'CANCELLED', label: 'Cancelled', count: cancelledCount }
           ].map(st => (
             <button
               key={st.id}
@@ -219,8 +245,18 @@ export default function AdminOrders() {
           ))}
         </div>
 
-        {/* Table Filter Dropdown & Refresh */}
-        <div className="flex items-center gap-3">
+        {/* Table Filter Dropdown, Clear Cancelled & Refresh */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {cancelledCount > 0 && (
+            <button
+              onClick={handleDeleteAllCancelled}
+              className="px-3 py-2 rounded-2xl bg-red-950/80 hover:bg-red-900 border border-red-700/80 text-red-300 text-xs font-bold flex items-center gap-1.5 transition-colors shadow shrink-0"
+              title="Sabhi cancelled orders ko permanently delete karein"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-red-400" />
+              <span>Clear Cancelled ({cancelledCount})</span>
+            </button>
+          )}
           <select
             value={selectedTable}
             onChange={(e) => setSelectedTable(e.target.value)}
@@ -410,8 +446,19 @@ export default function AdminOrders() {
                   )}
 
                   {ord.status === 'CANCELLED' && (
-                    <div className="col-span-2 text-center text-xs text-red-400 font-bold py-1 bg-red-950/30 rounded-xl border border-red-500/30">
-                      ✗ Order cancelled
+                    <div className="col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-2xl bg-red-950/40 border border-red-500/30">
+                      <span className="text-xs text-red-400 font-bold flex items-center gap-1.5">
+                        <XCircle className="w-4 h-4 text-red-400" />
+                        <span>Order Rejected / Cancelled</span>
+                      </span>
+                      <button
+                        onClick={() => handleDeleteOrder(ord.id)}
+                        className="py-1.5 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-1.5 transition-all text-xs font-black shadow active:scale-95 shrink-0"
+                        title="Sabhi jagah se permanently delete karein"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Permanent Delete</span>
+                      </button>
                     </div>
                   )}
                 </div>

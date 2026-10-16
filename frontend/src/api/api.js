@@ -470,6 +470,53 @@ export const api = {
     return orders.find(o => String(o.id) === String(orderId));
   },
 
+  // Staff: Delete Order Permanently
+  async deleteOrder(orderId) {
+    let orders = getLocalOrders();
+    orders = orders.filter(o => String(o.id) !== String(orderId));
+    saveLocalOrders(orders);
+
+    broadcastEvent('ORDERS_UPDATED', orders);
+    window.dispatchEvent(new CustomEvent('garam_masala_orders_updated'));
+    window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      // offline fallback
+    }
+
+    return { success: true };
+  },
+
+  // Staff: Delete All Cancelled Orders Permanently
+  async deleteCancelledOrders() {
+    let orders = getLocalOrders();
+    const remaining = orders.filter(o => o.status !== 'CANCELLED');
+    const deletedCount = orders.length - remaining.length;
+    saveLocalOrders(remaining);
+
+    broadcastEvent('ORDERS_UPDATED', remaining);
+    window.dispatchEvent(new CustomEvent('garam_masala_orders_updated'));
+    window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders/cancelled`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      // offline fallback
+    }
+
+    return { success: true, deletedCount };
+  },
+
   // Staff Login
   async login(username, password) {
     try {
