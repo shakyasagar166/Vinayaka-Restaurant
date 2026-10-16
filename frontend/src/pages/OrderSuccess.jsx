@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Clock, ChefHat, UtensilsCrossed, CheckCheck, MapPin, Plus, RefreshCw, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, ChefHat, UtensilsCrossed, CheckCheck, MapPin, Plus, RefreshCw, AlertCircle, ShieldAlert } from 'lucide-react';
 import { api } from '../api/api';
 
 export default function OrderSuccess({ initialOrder, onOrderMore }) {
@@ -76,10 +76,10 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
 
   // Determine active step index
   const statusSteps = [
-    { key: 'PENDING', label: 'Order Received', hindi: 'Order Receive Hua', icon: Clock },
-    { key: 'PREPARING', label: 'In Kitchen', hindi: 'Kitchen Me Ban Raha Hai', icon: ChefHat },
+    { key: 'PENDING', label: 'Table Verification', hindi: 'Captain Confirmation', icon: Clock },
+    { key: 'PREPARING', label: 'In Kitchen', hindi: 'Accepted & Cooking', icon: ChefHat },
     { key: 'SERVED', label: 'Served on Table', hindi: 'Table Par Serve Hua', icon: UtensilsCrossed },
-    { key: 'COMPLETED', label: 'Completed', hindi: 'Order Complete', icon: CheckCheck }
+    { key: 'COMPLETED', label: 'Completed', hindi: 'Order Complete / Paid', icon: CheckCheck }
   ];
 
   const getStepIndex = (status) => {
@@ -100,14 +100,34 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
       
       {/* Top Banner */}
       <div className="text-center space-y-2 bg-gradient-to-b from-[#111728] to-[#0a0e1a] p-6 sm:p-8 rounded-3xl border border-amber-500/30 shadow-2xl">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto mb-2 animate-pulse">
-          <CheckCircle2 className="w-9 h-9" />
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2 animate-pulse ${
+          order.status === 'CANCELLED' 
+            ? 'bg-red-500/20 text-red-400 border border-red-500/40'
+            : order.status === 'PENDING'
+            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+        }`}>
+          {order.status === 'CANCELLED' ? (
+            <AlertCircle className="w-9 h-9" />
+          ) : order.status === 'PENDING' ? (
+            <Clock className="w-9 h-9 animate-spin" style={{ animationDuration: '6s' }} />
+          ) : (
+            <CheckCircle2 className="w-9 h-9" />
+          )}
         </div>
         <h2 className="font-cinzel text-2xl sm:text-3xl font-bold text-amber-400">
-          Order Placed Successfully!
+          {order.status === 'CANCELLED'
+            ? 'Order Cancelled'
+            : order.status === 'PENDING'
+            ? 'Order Received (Verification Pending)'
+            : 'Order Confirmed & In Kitchen!'}
         </h2>
         <p className="text-gray-300 text-sm">
-          Aapka order kitchen mein bhej diya gaya hai.
+          {order.status === 'CANCELLED'
+            ? 'Yeh order cancel/reject kar diya gaya hai.'
+            : order.status === 'PENDING'
+            ? 'Aapka order receive hua hai. Waiter table verify karke accept karega!'
+            : 'Chef kitchen me aapka taaza khana bana rahe hain.'}
         </p>
 
         {/* Order Meta details */}
@@ -124,6 +144,40 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
           </span>
         </div>
       </div>
+
+      {/* Verification Notice Card */}
+      {order.status === 'PENDING' && (
+        <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs sm:text-sm space-y-1.5 shadow-lg">
+          <div className="font-black text-amber-300 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-amber-400 animate-spin" />
+            <span>Table Verification In Progress...</span>
+          </div>
+          <p className="text-gray-300 text-xs leading-relaxed">
+            Aapka order receive ho gaya hai! Restaurant captain Table <strong>{order.tableNumber}</strong> par aakar/dekhkar order 1-click me confirm karega, aur turant kitchen me khana banna shuru ho jayega. Kripya apni table par baithe rahein!
+          </p>
+        </div>
+      )}
+
+      {order.status === 'PREPARING' && (
+        <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm space-y-1 shadow-lg">
+          <div className="font-black text-emerald-400 flex items-center gap-2">
+            <ChefHat className="w-4 h-4 text-emerald-400" />
+            <span>Order Accepted by Captain &amp; In Kitchen!</span>
+          </div>
+          <p className="text-gray-300 text-xs leading-relaxed">
+            Captain ne aapki table verify karke order accept kar diya hai. Kitchen me chef aapka khana taaza bana rahe hain!
+          </p>
+        </div>
+      )}
+
+      {order.status === 'CANCELLED' && (
+        <div className="p-4 rounded-2xl bg-red-950/80 border border-red-500 text-red-200 text-center text-xs sm:text-sm font-bold space-y-1 shadow-lg">
+          <div className="text-base font-black text-red-400">✗ Order Not Confirmed / Cancelled</div>
+          <p className="text-xs text-gray-300">
+            Yeh order restaurant dwara reject/cancel kar diya gaya hai (Table par koi customer upasthit nahi tha ya order galat tha).
+          </p>
+        </div>
+      )}
 
       {/* Live Status Stepper */}
       <div className="glass-panel rounded-3xl p-5 sm:p-6 space-y-4">
@@ -145,8 +199,8 @@ export default function OrderSuccess({ initialOrder, onOrderMore }) {
         </div>
 
         {order.status === 'CANCELLED' ? (
-          <div className="p-4 rounded-xl bg-red-900/40 border border-red-500 text-red-300 text-center font-bold">
-            Yeh order cancel ho gaya hai. (This order was cancelled).
+          <div className="p-4 rounded-xl bg-red-900/40 border border-red-500 text-red-300 text-center font-bold text-xs">
+            Yeh order cancel ho gaya hai. (Order was rejected or cancelled).
           </div>
         ) : (
           <div className="grid grid-cols-4 gap-1.5 sm:gap-2 pt-2 relative">

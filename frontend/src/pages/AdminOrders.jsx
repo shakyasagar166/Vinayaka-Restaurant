@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles } from 'lucide-react';
+import { ChefHat, Clock, UtensilsCrossed, CheckCheck, XCircle, RefreshCw, Bell, Phone, User, MapPin, Sparkles, ShieldAlert, CheckCircle } from 'lucide-react';
 import { api } from '../api/api';
 
 // Browser synthesizer chime for new incoming kitchen orders
@@ -109,18 +109,25 @@ export default function AdminOrders() {
     }
   };
 
+  const pendingCount = orders.filter(o => o.status === 'PENDING').length;
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse">New Order / Naya</span>;
+        return (
+          <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-pulse flex items-center gap-1">
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            <span>Verify Table</span>
+          </span>
+        );
       case 'PREPARING':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 border border-blue-500/50">Cooking / In Kitchen</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 border border-blue-500/50">Cooking in Kitchen (Confirmed)</span>;
       case 'SERVED':
         return <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-400 border border-purple-500/50">Served / On Table</span>;
       case 'COMPLETED':
         return <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50">Completed / Paid</span>;
       case 'CANCELLED':
-        return <span className="px-3 py-1 rounded-full text-xs font-black bg-red-500/20 text-red-400 border border-red-500/50">Cancelled</span>;
+        return <span className="px-3 py-1 rounded-full text-xs font-black bg-red-500/20 text-red-400 border border-red-500/50">Rejected / Cancelled</span>;
       default:
         return null;
     }
@@ -129,29 +136,55 @@ export default function AdminOrders() {
   return (
     <div className="space-y-6">
       
-      {/* Live Incoming Order Alert Banner */}
+      {/* Live Incoming Order Alert Banner with 1-Click Captain Confirmation */}
       {newOrderAlert && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-bold flex items-center justify-between shadow-2xl animate-bounce-subtle">
+        <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-bold flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xl animate-bounce-subtle border-2 border-yellow-200">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-black text-amber-300 flex items-center justify-center animate-spin" style={{ animationDuration: '3s' }}>
-              <Bell className="w-5 h-5 fill-amber-300 text-amber-300" />
+            <div className="w-12 h-12 rounded-2xl bg-black text-amber-300 flex items-center justify-center animate-spin shrink-0" style={{ animationDuration: '3s' }}>
+              <Bell className="w-6 h-6 fill-amber-300 text-amber-300" />
             </div>
             <div>
-              <div className="text-sm font-black uppercase tracking-wider">
-                🔔 Naya Customer Order Aaya Hai! (Table {newOrderAlert.tableNumber})
+              <div className="text-sm sm:text-base font-black uppercase tracking-wider flex items-center gap-2">
+                <span>🔔 Naya Order: Table {newOrderAlert.tableNumber}</span>
+                <span className="text-[10px] bg-black text-amber-300 px-2 py-0.5 rounded-full font-bold">Verification Needed</span>
               </div>
-              <div className="text-xs font-medium text-black/80">
-                Customer: <strong>{newOrderAlert.customerName}</strong> &bull; Total: <strong>₹{newOrderAlert.totalAmount}</strong> &bull; #{newOrderAlert.orderNumber}
+              <div className="text-xs font-medium text-black/90 mt-0.5">
+                Customer: <strong>{newOrderAlert.customerName}</strong> &bull; Bill: <strong>₹{newOrderAlert.totalAmount}</strong> &bull; Order #{newOrderAlert.orderNumber}
               </div>
             </div>
           </div>
 
-          <button
-            onClick={() => setNewOrderAlert(null)}
-            className="px-3 py-1.5 rounded-xl bg-black text-amber-300 text-xs font-bold hover:bg-gray-900 transition-colors"
-          >
-            Acknowledge
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={async () => {
+                await handleStatusChange(newOrderAlert.id, 'PREPARING');
+                setNewOrderAlert(null);
+              }}
+              className="px-4 py-2 rounded-xl bg-black text-emerald-300 hover:text-emerald-200 text-xs font-black flex items-center gap-1.5 shadow transition-transform active:scale-95"
+            >
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>1-Click Accept (Send to Kitchen)</span>
+            </button>
+
+            <button
+              onClick={async () => {
+                await handleStatusChange(newOrderAlert.id, 'CANCELLED');
+                setNewOrderAlert(null);
+              }}
+              className="px-3.5 py-2 rounded-xl bg-red-950 text-red-200 hover:bg-red-900 text-xs font-black flex items-center gap-1.5 shadow transition-transform active:scale-95"
+            >
+              <XCircle className="w-4 h-4 text-red-400" />
+              <span>Reject (Fake/Empty)</span>
+            </button>
+
+            <button
+              onClick={() => setNewOrderAlert(null)}
+              className="p-2 rounded-xl bg-black/30 hover:bg-black/50 text-black text-xs font-bold"
+              title="Close Banner"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 
@@ -162,7 +195,7 @@ export default function AdminOrders() {
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {[
             { id: 'ALL', label: 'All Orders' },
-            { id: 'PENDING', label: 'Pending (New)' },
+            { id: 'PENDING', label: 'Verify Table', count: pendingCount },
             { id: 'PREPARING', label: 'In Kitchen' },
             { id: 'SERVED', label: 'Served' },
             { id: 'COMPLETED', label: 'Completed' }
@@ -170,13 +203,18 @@ export default function AdminOrders() {
             <button
               key={st.id}
               onClick={() => setActiveStatus(st.id)}
-              className={`px-3.5 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 activeStatus === st.id
                   ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25 ring-2 ring-amber-400/50'
                   : 'bg-black/40 text-gray-400 hover:text-white border border-gray-800'
               }`}
             >
-              {st.label}
+              <span>{st.label}</span>
+              {st.count > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-red-600 text-white text-[10px] font-black animate-pulse">
+                  {st.count}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -313,22 +351,32 @@ export default function AdminOrders() {
                 {/* Workflow Status Action Buttons */}
                 <div className="grid grid-cols-2 gap-2 text-xs font-bold">
                   {ord.status === 'PENDING' && (
-                    <>
-                      <button
-                        onClick={() => handleStatusChange(ord.id, 'PREPARING')}
-                        className="py-2.5 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-1.5 transition-colors shadow-md font-black"
-                      >
-                        <ChefHat className="w-3.5 h-3.5" />
-                        <span>Start Cooking</span>
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(ord.id, 'CANCELLED')}
-                        className="py-2.5 px-3 rounded-2xl bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-800/60 flex items-center justify-center gap-1.5 transition-colors font-bold"
-                      >
-                        <XCircle className="w-3.5 h-3.5" />
-                        <span>Cancel</span>
-                      </button>
-                    </>
+                    <div className="col-span-2 space-y-2.5">
+                      <div className="bg-amber-500/15 border border-amber-500/40 rounded-2xl p-2.5 text-xs text-amber-300 flex items-center gap-2">
+                        <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 animate-bounce" />
+                        <div>
+                          <strong className="block text-amber-200 uppercase tracking-wider text-[10px]">Captain / Waiter 1-Click Confirmation</strong>
+                          <span className="text-[11px] text-gray-300">Check karein Table <strong>{ord.tableNumber}</strong> par customer baitha hai ya nahi.</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => handleStatusChange(ord.id, 'PREPARING')}
+                          className="py-3 px-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white flex items-center justify-center gap-1.5 transition-all shadow-lg shadow-emerald-600/30 font-black text-xs active:scale-95"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Accept &amp; Send to Kitchen</span>
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(ord.id, 'CANCELLED')}
+                          className="py-3 px-3 rounded-2xl bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-700/80 flex items-center justify-center gap-1.5 transition-all font-black text-xs active:scale-95"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          <span>Reject (Fake / Khaali Table)</span>
+                        </button>
+                      </div>
+                    </div>
                   )}
 
                   {ord.status === 'PREPARING' && (

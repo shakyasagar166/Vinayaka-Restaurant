@@ -296,9 +296,14 @@ export default function CartDrawer({ onOrderSuccess }) {
                   </>
                 )}
               </button>
-              <p className="text-[10px] text-center text-gray-400">
-                Directly sent to Garam Masala Restaurant's kitchen screen &bull; Table {tableNumber}
-              </p>
+              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-0.5">
+                <p className="text-[11px] font-bold text-amber-300">
+                  🔒 Captain 1-Click Verification
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Order bhejte hi waiter Table {tableNumber} verify karega aur confirm karte hi chef khana banana start karega.
+                </p>
+              </div>
             </div>
           )}
 

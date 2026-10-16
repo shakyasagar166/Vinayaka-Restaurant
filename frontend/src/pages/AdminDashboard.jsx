@@ -115,18 +115,25 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           </div>
         </div>
 
-        {/* Pending Orders (Need Action) */}
-        <div className="p-4 rounded-2xl bg-[#0f1424] border border-amber-500/30 flex items-center space-x-3 shadow-lg">
+        {/* Pending Table Verification Orders (Need Captain Action) */}
+        <div className="p-4 rounded-2xl bg-[#0f1424] border border-amber-500/40 flex items-center space-x-3 shadow-lg">
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 animate-pulse">
             <Clock className="w-5 h-5" />
           </div>
           <div>
             <span className="text-[11px] text-gray-400 uppercase font-bold tracking-wider block">
-              Pending Orders
+              Verify Table Orders
             </span>
-            <span className="text-lg sm:text-xl font-extrabold text-amber-400">
-              {stats.pendingOrders}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg sm:text-xl font-extrabold text-amber-400">
+                {stats.pendingOrders}
+              </span>
+              {stats.pendingOrders > 0 && (
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-red-600 text-white animate-pulse">
+                  Action
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -175,8 +182,8 @@ export default function AdminDashboard({ onNavigateToMenu }) {
           <ChefHat className="w-4 h-4" />
           <span>Live Kitchen Orders</span>
           {stats.pendingOrders > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-black text-[10px] font-black animate-pulse">
-              {stats.pendingOrders}
+            <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black animate-pulse flex items-center gap-1">
+              <span>{stats.pendingOrders} Verify</span>
             </span>
           )}
         </button>
