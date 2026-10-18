@@ -80,6 +80,7 @@ public class OrderService {
             order.addItem(orderItem);
         }
 
+        order.setSubtotal(grandTotal);
         order.setTotalAmount(grandTotal);
         return orderRepository.save(order);
     }

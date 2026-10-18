@@ -31,6 +31,15 @@ public class Order {
     @Column(name = "order_type", length = 30)
     private String orderType = "DINE_IN";
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal subtotal = BigDecimal.ZERO;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal tax = BigDecimal.ZERO;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal discount = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private OrderStatus status = OrderStatus.PENDING;
@@ -53,6 +62,9 @@ public class Order {
 
     public Order() {
         this.orderType = "DINE_IN";
+        this.subtotal = BigDecimal.ZERO;
+        this.tax = BigDecimal.ZERO;
+        this.discount = BigDecimal.ZERO;
         this.status = OrderStatus.PENDING;
         this.totalAmount = BigDecimal.ZERO;
         this.createdAt = LocalDateTime.now();
@@ -66,6 +78,9 @@ public class Order {
         this.customerPhone = customerPhone;
         this.specialInstructions = specialInstructions;
         this.orderType = "DINE_IN";
+        this.subtotal = BigDecimal.ZERO;
+        this.tax = BigDecimal.ZERO;
+        this.discount = BigDecimal.ZERO;
         this.status = OrderStatus.PENDING;
         this.totalAmount = BigDecimal.ZERO;
         this.createdAt = LocalDateTime.now();
@@ -90,6 +105,7 @@ public class Order {
                 sum = sum.add(item.getSubtotal());
             }
         }
+        this.subtotal = sum;
         this.totalAmount = sum;
     }
 
@@ -179,6 +195,30 @@ public class Order {
 
     public void setOrderType(String orderType) {
         this.orderType = (orderType != null && !orderType.trim().isEmpty()) ? orderType.trim() : "DINE_IN";
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal != null ? subtotal : totalAmount;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal != null ? subtotal : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getTax() {
+        return tax != null ? tax : BigDecimal.ZERO;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax != null ? tax : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount != null ? discount : BigDecimal.ZERO;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount != null ? discount : BigDecimal.ZERO;
     }
 
     public LocalDateTime getUpdatedAt() {
