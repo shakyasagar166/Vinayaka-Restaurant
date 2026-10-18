@@ -28,6 +28,9 @@ public class Order {
     @Column(length = 20)
     private String customerPhone;
 
+    @Column(name = "order_type", length = 30)
+    private String orderType = "DINE_IN";
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private OrderStatus status = OrderStatus.PENDING;
@@ -48,7 +51,13 @@ public class Order {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public Order() {}
+    public Order() {
+        this.orderType = "DINE_IN";
+        this.status = OrderStatus.PENDING;
+        this.totalAmount = BigDecimal.ZERO;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
     public Order(String orderNumber, String tableNumber, String customerName, String customerPhone, String specialInstructions) {
         this.orderNumber = orderNumber;
@@ -56,6 +65,7 @@ public class Order {
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.specialInstructions = specialInstructions;
+        this.orderType = "DINE_IN";
         this.status = OrderStatus.PENDING;
         this.totalAmount = BigDecimal.ZERO;
         this.createdAt = LocalDateTime.now();
@@ -161,6 +171,14 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getOrderType() {
+        return orderType != null ? orderType : "DINE_IN";
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = (orderType != null && !orderType.trim().isEmpty()) ? orderType.trim() : "DINE_IN";
     }
 
     public LocalDateTime getUpdatedAt() {

@@ -45,6 +45,11 @@ public class OrderService {
                 request.getCustomerPhone(),
                 request.getSpecialInstructions()
         );
+        if (request.getOrderType() != null && !request.getOrderType().trim().isEmpty()) {
+            order.setOrderType(request.getOrderType().trim());
+        } else {
+            order.setOrderType("DINE_IN");
+        }
 
         BigDecimal grandTotal = BigDecimal.ZERO;
 

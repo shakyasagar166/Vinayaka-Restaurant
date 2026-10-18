@@ -11,6 +11,7 @@ export default function AdminOrders() {
   const [tablesList, setTablesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newOrderAlert, setNewOrderAlert] = useState(null);
+  const [dismissedOrderIds, setDismissedOrderIds] = useState(new Set());
   const [bellMuted, setBellMutedState] = useState(isBellMuted());
   const [testStatus, setTestStatus] = useState('');
 
@@ -177,8 +178,22 @@ export default function AdminOrders() {
     }
   };
 
+  const pendingOrders = orders.filter(o => o.status === 'PENDING' && !dismissedOrderIds.has(String(o.id || o.orderNumber)));
   const pendingCount = orders.filter(o => o.status === 'PENDING').length;
   const cancelledCount = orders.filter(o => o.status === 'CANCELLED').length;
+
+  const activeAlertOrder = (newOrderAlert && !dismissedOrderIds.has(String(newOrderAlert.id || newOrderAlert.orderNumber)))
+    ? newOrderAlert
+    : (pendingOrders.length > 0 ? pendingOrders[0] : null);
+
+  const handleDismissAlert = (order) => {
+    if (!order) return;
+    const key = String(order.id || order.orderNumber);
+    setDismissedOrderIds(prev => new Set([...prev, key]));
+    if (newOrderAlert && String(newOrderAlert.id || newOrderAlert.orderNumber) === key) {
+      setNewOrderAlert(null);
+    }
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -206,7 +221,7 @@ export default function AdminOrders() {
     <div className="space-y-6">
       
       {/* Live Incoming Order Alert Banner with 1-Click Captain Confirmation */}
-      {newOrderAlert && (
+      {activeAlertOrder && (
         <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-bold flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xl animate-bounce-subtle border-2 border-yellow-200">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-2xl bg-black text-amber-300 flex items-center justify-center animate-spin shrink-0" style={{ animationDuration: '3s' }}>
@@ -214,11 +229,11 @@ export default function AdminOrders() {
             </div>
             <div>
               <div className="text-sm sm:text-base font-black uppercase tracking-wider flex items-center gap-2">
-                <span>🔔 Naya Order: Table {newOrderAlert.tableNumber}</span>
+                <span>🔔 Naya Order: Table {activeAlertOrder.tableNumber}</span>
                 <span className="text-[10px] bg-black text-amber-300 px-2 py-0.5 rounded-full font-bold">Verification Needed</span>
               </div>
               <div className="text-xs font-medium text-black/90 mt-0.5">
-                Customer: <strong>{newOrderAlert.customerName}</strong> &bull; Bill: <strong>₹{newOrderAlert.totalAmount}</strong> &bull; Order #{newOrderAlert.orderNumber}
+                Customer: <strong>{activeAlertOrder.customerName}</strong> &bull; Bill: <strong>₹{activeAlertOrder.totalAmount}</strong> &bull; Order #{activeAlertOrder.orderNumber}
               </div>
             </div>
           </div>
@@ -226,8 +241,8 @@ export default function AdminOrders() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={async () => {
-                await handleStatusChange(newOrderAlert.id, 'PREPARING');
-                setNewOrderAlert(null);
+                await handleStatusChange(activeAlertOrder.id, 'PREPARING');
+                handleDismissAlert(activeAlertOrder);
               }}
               className="px-4 py-2 rounded-xl bg-black text-emerald-300 hover:text-emerald-200 text-xs font-black flex items-center gap-1.5 shadow transition-transform active:scale-95"
             >
@@ -237,8 +252,8 @@ export default function AdminOrders() {
 
             <button
               onClick={async () => {
-                await handleStatusChange(newOrderAlert.id, 'CANCELLED');
-                setNewOrderAlert(null);
+                await handleStatusChange(activeAlertOrder.id, 'CANCELLED');
+                handleDismissAlert(activeAlertOrder);
               }}
               className="px-3.5 py-2 rounded-xl bg-red-950 text-red-200 hover:bg-red-900 text-xs font-black flex items-center gap-1.5 shadow transition-transform active:scale-95"
             >
@@ -247,7 +262,7 @@ export default function AdminOrders() {
             </button>
 
             <button
-              onClick={() => setNewOrderAlert(null)}
+              onClick={() => handleDismissAlert(activeAlertOrder)}
               className="p-2 rounded-xl bg-black/30 hover:bg-black/50 text-black text-xs font-bold"
               title="Close Banner"
             >

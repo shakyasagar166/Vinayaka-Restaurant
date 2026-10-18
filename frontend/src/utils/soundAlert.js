@@ -26,12 +26,22 @@ export function getAudioContext() {
 }
 
 // Global user interaction listener to silently unlock browser autoplay
+export function isAudioUnlocked() {
+  return Boolean(isUnlocked || (audioContext && audioContext.state === 'running'));
+}
+
 if (typeof window !== 'undefined') {
-  const unlockAudio = () => {
+  const unlockAudio = async () => {
     try {
       const ctx = getAudioContext();
-      if (ctx && ctx.state === 'running') {
-        isUnlocked = true;
+      if (ctx) {
+        if (ctx.state === 'suspended') {
+          await ctx.resume().catch(() => {});
+        }
+        if (ctx.state === 'running') {
+          isUnlocked = true;
+          window.dispatchEvent(new CustomEvent('gm_audio_unlocked'));
+        }
       }
     } catch (e) {}
   };
@@ -153,13 +163,33 @@ let isInitialized = false;
 export function checkAndNotifyNewOrders(orders = []) {
   if (!Array.isArray(orders)) return { hasNew: false, newOrders: [] };
 
-  // First time initialization: populate existing orders without chiming
+  // First time initialization: check if any recent pending order was placed in last 3 mins
   if (!isInitialized) {
+    const now = Date.now();
+    const recentPending = orders.filter(o => {
+      if (o.status !== 'PENDING') return false;
+      const orderTime = o.createdAt ? new Date(o.createdAt).getTime() : 0;
+      return (now - orderTime) < 180000; // 3 minutes
+    });
+
     orders.forEach(o => {
       const idKey = String(o.id || o.orderNumber);
       if (idKey) knownOrderIds.add(idKey);
     });
     isInitialized = true;
+
+    if (recentPending.length > 0) {
+      playKitchenBell({ repeat: 2, volume: 0.6 });
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('gm_new_order_received', {
+          detail: recentPending[0]
+        }));
+        window.dispatchEvent(new CustomEvent('garam_masala_order_placed', {
+          detail: recentPending[0]
+        }));
+      }
+      return { hasNew: true, newOrders: recentPending };
+    }
     return { hasNew: false, newOrders: [] };
   }
 
@@ -190,9 +220,12 @@ export function checkAndNotifyNewOrders(orders = []) {
       }
     } catch (e) {}
 
-    // Dispatch global event
+    // Dispatch global events for instant reactive UI updates
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('gm_new_order_received', {
+        detail: newlyPlacedOrders[0]
+      }));
+      window.dispatchEvent(new CustomEvent('garam_masala_order_placed', {
         detail: newlyPlacedOrders[0]
       }));
     }

@@ -15,6 +15,8 @@ public class OrderCreateRequest {
 
     private String customerPhone;
 
+    private String orderType = "DINE_IN";
+
     private String specialInstructions;
 
     @NotEmpty(message = "Cart cannot be empty. Please select at least one item.")
@@ -27,6 +29,7 @@ public class OrderCreateRequest {
         this.tableNumber = tableNumber;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
+        this.orderType = "DINE_IN";
         this.specialInstructions = specialInstructions;
         this.items = items;
     }
@@ -61,6 +64,14 @@ public class OrderCreateRequest {
 
     public void setSpecialInstructions(String specialInstructions) {
         this.specialInstructions = specialInstructions;
+    }
+
+    public String getOrderType() {
+        return orderType != null ? orderType : "DINE_IN";
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
     }
 
     public List<OrderItemRequest> getItems() {

@@ -1,5 +1,20 @@
-const rawApiUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
-const API_BASE_URL = rawApiUrl ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`) : '/api';
+const DEFAULT_BACKEND_URL = 'https://vinayaka-restaurant-backend.onrender.com';
+const rawApiUrl = (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim() !== '')
+  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+  : DEFAULT_BACKEND_URL;
+const API_BASE_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
+
+// Safe fetch with timeout so offline / slow requests never freeze the UI
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
 
 // Cross-tab broadcast channel for real-time synchronization across all tabs and windows
 let broadcastChannel = null;
@@ -338,6 +353,7 @@ export const api = {
       tableNumber: orderData.tableNumber,
       customerName: orderData.customerName,
       customerPhone: orderData.customerPhone || '',
+      orderType: orderData.orderType || 'DINE_IN',
       specialInstructions: orderData.specialInstructions || '',
       items: preparedItems.map(p => ({
         menuItemId: p.menuItemId,
@@ -350,11 +366,11 @@ export const api = {
 
     // 1. Post to backend Spring Boot server
     try {
-      const res = await fetch(`${API_BASE_URL}/orders`, {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadForServer)
-      });
+      }, 10000);
       if (res.ok) {
         const serverOrder = await res.json();
         let updatedOrders = getLocalOrders().filter(o => o.orderNumber !== serverOrder.orderNumber && o.id !== serverOrder.id);
@@ -362,7 +378,10 @@ export const api = {
         saveLocalOrders(updatedOrders);
         broadcastEvent('NEW_ORDER', serverOrder);
         window.dispatchEvent(new CustomEvent('vinayaka_order_placed', { detail: serverOrder }));
+        window.dispatchEvent(new CustomEvent('garam_masala_order_placed', { detail: serverOrder }));
+        window.dispatchEvent(new CustomEvent('gm_new_order_received', { detail: serverOrder }));
         window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
+        window.dispatchEvent(new CustomEvent('garam_masala_orders_updated'));
         return serverOrder;
       } else {
         const errJson = await res.json().catch(() => ({}));
@@ -379,6 +398,7 @@ export const api = {
       tableNumber: orderData.tableNumber,
       customerName: orderData.customerName,
       customerPhone: orderData.customerPhone || '',
+      orderType: orderData.orderType || 'DINE_IN',
       specialInstructions: orderData.specialInstructions || '',
       status: "PENDING",
       totalAmount: totalAmount,
@@ -393,7 +413,10 @@ export const api = {
 
     broadcastEvent('NEW_ORDER', newOrder);
     window.dispatchEvent(new CustomEvent('vinayaka_order_placed', { detail: newOrder }));
+    window.dispatchEvent(new CustomEvent('garam_masala_order_placed', { detail: newOrder }));
+    window.dispatchEvent(new CustomEvent('gm_new_order_received', { detail: newOrder }));
     window.dispatchEvent(new CustomEvent('vinayaka_orders_updated'));
+    window.dispatchEvent(new CustomEvent('garam_masala_orders_updated'));
 
     return newOrder;
   },
@@ -401,7 +424,7 @@ export const api = {
   // Track Order Status (Customer)
   async trackOrder(orderNumber) {
     try {
-      const res = await fetch(`${API_BASE_URL}/orders/track/${orderNumber}`);
+      const res = await fetchWithTimeout(`${API_BASE_URL}/orders/track/${orderNumber}`, {}, 6000);
       if (res.ok) {
         const serverOrder = await res.json();
         return serverOrder;
@@ -424,12 +447,16 @@ export const api = {
       if (table && table !== 'ALL') params.append('table', table);
       if ([...params].length) url += `?${params.toString()}`;
 
-      const res = await fetch(url, { headers: getAuthHeaders() });
+      const res = await fetchWithTimeout(url, { headers: getAuthHeaders() }, 6000);
       if (res.ok) {
         const serverOrders = await res.json();
         if (Array.isArray(serverOrders)) {
-          localStorage.setItem('mock_orders', JSON.stringify(serverOrders));
-          orders = serverOrders;
+          // Merge with any local orders that might be newer or pending
+          const serverIds = new Set(serverOrders.map(o => String(o.orderNumber || o.id)));
+          const unsyncedLocal = orders.filter(o => !serverIds.has(String(o.orderNumber || o.id)));
+          const merged = [...serverOrders, ...unsyncedLocal];
+          localStorage.setItem('mock_orders', JSON.stringify(merged));
+          orders = merged;
         }
       }
     } catch (e) {
