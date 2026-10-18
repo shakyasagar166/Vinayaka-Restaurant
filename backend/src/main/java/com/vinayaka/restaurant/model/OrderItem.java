@@ -31,10 +31,15 @@ public class OrderItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
+    @Column(length = 50)
+    private String portion = "FULL";
+
     @Column(length = 200)
     private String notes; // special requests like "Extra spicy", "No onions"
 
-    public OrderItem() {}
+    public OrderItem() {
+        this.portion = "FULL";
+    }
 
     public OrderItem(Order order, Long menuItemId, String menuItemName, BigDecimal price, int quantity, String notes) {
         this.order = order;
@@ -43,6 +48,7 @@ public class OrderItem {
         this.price = price;
         this.quantity = quantity;
         this.subtotal = price.multiply(BigDecimal.valueOf(quantity));
+        this.portion = "FULL";
         this.notes = notes;
     }
 
@@ -103,6 +109,14 @@ public class OrderItem {
 
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public String getPortion() {
+        return portion != null ? portion : "FULL";
+    }
+
+    public void setPortion(String portion) {
+        this.portion = (portion != null && !portion.trim().isEmpty()) ? portion.trim() : "FULL";
     }
 
     public String getNotes() {

@@ -58,6 +58,16 @@ public class OrderItemRequest {
         this.quantity = quantity;
     }
 
+    private String portion = "FULL";
+
+    public String getPortion() {
+        return portion != null ? portion : "FULL";
+    }
+
+    public void setPortion(String portion) {
+        this.portion = portion;
+    }
+
     public String getNotes() {
         return notes;
     }

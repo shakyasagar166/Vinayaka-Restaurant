@@ -34,7 +34,8 @@ public class DatabaseSchemaFixer implements ApplicationRunner {
                 "ALTER TABLE customer_orders MODIFY COLUMN subtotal DECIMAL(10,2) DEFAULT 0.00",
                 "ALTER TABLE customer_orders MODIFY COLUMN order_type VARCHAR(50) DEFAULT 'DINE_IN'",
                 "ALTER TABLE customer_orders MODIFY COLUMN tax DECIMAL(10,2) DEFAULT 0.00",
-                "ALTER TABLE customer_orders MODIFY COLUMN discount DECIMAL(10,2) DEFAULT 0.00"
+                "ALTER TABLE customer_orders MODIFY COLUMN discount DECIMAL(10,2) DEFAULT 0.00",
+                "ALTER TABLE order_items MODIFY COLUMN portion VARCHAR(50) DEFAULT 'FULL'"
             };
 
             for (String sql : commonFixes) {
@@ -44,38 +45,45 @@ public class DatabaseSchemaFixer implements ApplicationRunner {
                 } catch (Exception ignored) {}
             }
 
-            // 2. Query information_schema to find ANY column in customer_orders that has NO default and is NOT NULL
-            try {
-                String checkSql = "SELECT COLUMN_NAME, IS_NULLABLE, COLUMN_DEFAULT, DATA_TYPE " +
-                                  "FROM information_schema.COLUMNS " +
-                                  "WHERE TABLE_NAME = 'customer_orders'";
-                List<Map<String, Object>> columns = jdbcTemplate.queryForList(checkSql);
+            // 2. Query information_schema to find ANY column in customer_orders or order_items that has NO default and is NOT NULL
+            String[] tablesToCheck = { "customer_orders", "order_items" };
+            for (String tableName : tablesToCheck) {
+                try {
+                    String checkSql = "SELECT COLUMN_NAME, IS_NULLABLE, COLUMN_DEFAULT, DATA_TYPE " +
+                                      "FROM information_schema.COLUMNS " +
+                                      "WHERE TABLE_NAME = '" + tableName + "'";
+                    List<Map<String, Object>> columns = jdbcTemplate.queryForList(checkSql);
 
-                for (Map<String, Object> col : columns) {
-                    String colName = String.valueOf(col.get("COLUMN_NAME"));
-                    String isNullable = String.valueOf(col.get("IS_NULLABLE"));
-                    Object colDefault = col.get("COLUMN_DEFAULT");
-                    String dataType = String.valueOf(col.get("DATA_TYPE"));
+                    for (Map<String, Object> col : columns) {
+                        String colName = String.valueOf(col.get("COLUMN_NAME"));
+                        String isNullable = String.valueOf(col.get("IS_NULLABLE"));
+                        Object colDefault = col.get("COLUMN_DEFAULT");
+                        String dataType = String.valueOf(col.get("DATA_TYPE"));
 
-                    log.info("customer_orders column: {} (type={}, nullable={}, default={})", colName, dataType, isNullable, colDefault);
+                        log.info("{}.{} (type={}, nullable={}, default={})", tableName, colName, dataType, isNullable, colDefault);
 
-                    boolean isEssential = "id".equalsIgnoreCase(colName) ||
-                                          "order_number".equalsIgnoreCase(colName) ||
-                                          "table_number".equalsIgnoreCase(colName) ||
-                                          "customer_name".equalsIgnoreCase(colName);
+                        boolean isEssential = "id".equalsIgnoreCase(colName) ||
+                                              "order_id".equalsIgnoreCase(colName) ||
+                                              "order_number".equalsIgnoreCase(colName) ||
+                                              "table_number".equalsIgnoreCase(colName) ||
+                                              "customer_name".equalsIgnoreCase(colName) ||
+                                              "menu_item_name".equalsIgnoreCase(colName) ||
+                                              "price".equalsIgnoreCase(colName) ||
+                                              "quantity".equalsIgnoreCase(colName);
 
-                    if (!isEssential && "NO".equalsIgnoreCase(isNullable) && colDefault == null) {
-                        try {
-                            String alterSql = "ALTER TABLE customer_orders MODIFY COLUMN `" + colName + "` " + dataType + " NULL";
-                            jdbcTemplate.execute(alterSql);
-                            log.info("Relaxed NOT NULL constraint on column '{}': {}", colName, alterSql);
-                        } catch (Exception alterEx) {
-                            log.warn("Could not relax NOT NULL for column '{}': {}", colName, alterEx.getMessage());
+                        if (!isEssential && "NO".equalsIgnoreCase(isNullable) && colDefault == null) {
+                            try {
+                                String alterSql = "ALTER TABLE " + tableName + " MODIFY COLUMN `" + colName + "` " + dataType + " NULL";
+                                jdbcTemplate.execute(alterSql);
+                                log.info("Relaxed NOT NULL constraint on {}.{}: {}", tableName, colName, alterSql);
+                            } catch (Exception alterEx) {
+                                log.warn("Could not relax NOT NULL on {}.{}: {}", tableName, colName, alterEx.getMessage());
+                            }
                         }
                     }
+                } catch (Exception ex) {
+                    log.warn("Information schema check skipped for {}: {}", tableName, ex.getMessage());
                 }
-            } catch (Exception ex) {
-                log.warn("Information schema check skipped: {}", ex.getMessage());
             }
 
         } catch (Exception e) {

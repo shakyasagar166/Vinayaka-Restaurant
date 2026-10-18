@@ -75,6 +75,11 @@ public class OrderService {
                     qty,
                     itemReq.getNotes()
             );
+            if (itemReq.getPortion() != null && !itemReq.getPortion().trim().isEmpty()) {
+                orderItem.setPortion(itemReq.getPortion().trim());
+            } else {
+                orderItem.setPortion("FULL");
+            }
 
             grandTotal = grandTotal.add(orderItem.getSubtotal());
             order.addItem(orderItem);
